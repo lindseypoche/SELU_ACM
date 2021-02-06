@@ -1,0 +1,31 @@
+.logheader{
+    text-align: center;
+    background-color: #5d5c61;
+    color: white;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.LogInPage{
+    background-color: #938E94;
+    color: #938E94;
+    height: 100vh !important;
+    width: 100% !important;
+    margin: 0px;
+    display: flex;
+    align-items: center;
+}
+
+.LogInForm{
+    margin: auto;
+    border: 1px solid rgb(17, 17,51);
+    padding: 2em;
+    color: white;
+    background-color: #5d5c61;
+    font-size: 1rem;
+}
+
+.logButton{
+    background-color: #B0A295;
+    color: black;
+}
