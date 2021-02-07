@@ -6,6 +6,10 @@ import { Route, Switch} from 'react-router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './Components/Home/Home.js';
 import Login from './Components/LogIn/Login.js';
+import Members from './Components/Members/Members.js';
+import Events from './Components/Events/Events.js';
+import About from './Components/About/About.js';
+import Join from './Components/Join/Join.js';
 
 
 function App() {
@@ -14,7 +18,12 @@ function App() {
       <NavigationBar/>
       <Switch>
         <Route exact path='/home' component={Home}/>
-        <Route exact path='/login' component={Login} />
+        <Route exact path='/events' component={Events}/>
+        <Route exact path='/about' component={About}/>
+        <Route exact path='/join' component={Join}/>
+        <Route exact path='/login' component={Login}/>
+        <Route exact path='/members' component={Members}/>
+        
       </Switch>
     </BrowserRouter>
     

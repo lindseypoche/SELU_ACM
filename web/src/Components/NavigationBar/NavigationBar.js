@@ -28,7 +28,7 @@ const NavigationBar = (props) => {
 
   return (
     <div className="navacmbg">
-      <Navbar className="navacm" light expand="md">
+      <Navbar className="navacm" expand="md">
         <NavbarBrand>
           <NavLink className="acm" tag={Link} to='/Home'>ACM</NavLink>
         </NavbarBrand>
@@ -36,18 +36,34 @@ const NavigationBar = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink >Events</NavLink>
+              <NavLink className="acm" tag={Link} to="/events">Events</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink>About</NavLink>
+              <NavLink className="acm" tag={Link} to="/about">About</NavLink>
             </NavItem>
           </Nav>
           <Nav className="rightSide" navbar>
+          <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle className="acm" nav caret>
+                Admin
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem className="acm" tag={Link} to="/members">
+                  Members
+                </DropdownItem>
+                <DropdownItem className="acm">
+                  Events
+                </DropdownItem>
+                <DropdownItem className="acm">
+                  Images
+                </DropdownItem>
+              </DropdownMenu>
+              </UncontrolledDropdown>
               <NavItem>
-                <NavLink href="/components/">Join</NavLink>
+                <NavLink className="acm" tag={Link} to="/join">Join</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to="/Login">Login</NavLink>
+                <NavLink className="acm" tag={Link} to="/login">Login</NavLink>
               </NavItem>
             </Nav>
         </Collapse>

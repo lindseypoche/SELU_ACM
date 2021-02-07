@@ -5,7 +5,11 @@
 
 .navacm{
     background-color: #B0A295;
-    
+    color: black;
+}
+
+.nav-link:hover{
+    color: white;
 }
 
 .navacmbg{
@@ -13,8 +17,13 @@
     padding-top: 2%;
     padding-left: 2%;
     padding-right: 2%;
+    width: 100%;
+    position: fixed;
+    overflow: visible;
+    
 }
 
 .acm{
     color: black;
 }
+

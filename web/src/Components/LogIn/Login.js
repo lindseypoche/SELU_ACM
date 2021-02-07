@@ -9,7 +9,7 @@ class Login extends Component {
     return (
       <div className="LogInPage">
           <Form className="LogInForm">
-            <h2 className="logheader">Loginn</h2>
+            <h2 className="logheader">Login</h2>
             <br />
             <FormGroup>
               <Label for="exampleEmail">Username</Label>
