@@ -7,9 +7,9 @@
 }
 
 .LogInPage{
-    background-color: #938E94;
+    /* background-color: #938E94; */
     color: #938E94;
-    height: 100vh !important;
+    height: 50em !important;
     width: 100% !important;
     margin: 0px;
     display: flex;

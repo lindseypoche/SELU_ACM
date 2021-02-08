@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import acmlogo from '../image/association-for-computing-machinery-logo.png'
 import {
   Collapse,
   Navbar,
@@ -30,7 +31,7 @@ const NavigationBar = (props) => {
     <div className="navacmbg">
       <Navbar className="navacm" light expand="md">
         <NavbarBrand>
-          <NavLink className="acm" tag={Link} to='/Home'>ACM</NavLink>
+          <NavLink className="acm" tag={Link} to='/'><img style = {{height: '50px', width: '50px', marginRight: '10px'}} src = {acmlogo} />ACM</NavLink>
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>

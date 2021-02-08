@@ -26,3 +26,12 @@ img {
     width: 100% !important;
 }
 
+.discord-thing{
+    height:50em;
+    display:flex;
+}
+
+.discord-thing > a{
+    display:block;
+    margin:17em 6em auto auto;
+}
