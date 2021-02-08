@@ -1,14 +1,19 @@
 .container{
     background-color: #938E94;
-    height: 100vh;
+    height: 120vh;
     max-width: 100%;
     width: 100%;
     margin: 0px !important;
     padding: 5%;
     display: flex;
-    justify-content: center;
-    align-items: stretch;
-}
+    flex-direction: column;
+    justify-content: flex-start;
+    row-gap: 5%;
+    align-items: center;
+    padding-top: 150px;
+    text-align: center;
+}    
+
 
 .caro{
     width: 80%;
