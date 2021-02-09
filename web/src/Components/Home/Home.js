@@ -10,11 +10,12 @@ class Home extends Component {
 
   render() {
     return (
-      // <div className="container"> 
-      //   <div className="caro"><HomeCaro/></div>
-      // </div>
+
       
-      <div><div className="discord-thing"><a href="https://discord.gg/g6bQXFMjs3"><img src={discord}/></a></div>      <ParallaxContainer/></div>
+      <div>
+        <div className="discord-thing"><a href="https://discord.gg/g6bQXFMjs3"><img src={discord}/></a></div>      
+        <ParallaxContainer/>
+       </div>
 
 
     )
