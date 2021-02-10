@@ -6,6 +6,7 @@ import ParallaxContainer from './ParallaxContainer';
 import discord from '../image/Discord.png';
 
 
+
 class Home extends Component {
 
   render() {
@@ -14,7 +15,11 @@ class Home extends Component {
       //   <div className="caro"><HomeCaro/></div>
       // </div>
       
-      <div><div className="discord-thing"><a href="https://discord.gg/g6bQXFMjs3"><img src={discord}/></a></div>      <ParallaxContainer/></div>
+      <div>
+        <div className="discord-thing"><a href="https://discord.gg/g6bQXFMjs3"><img src={discord}/></a>
+        </div>      
+      <ParallaxContainer/>
+      </div>
 
 
     )

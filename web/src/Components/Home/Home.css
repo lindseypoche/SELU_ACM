@@ -32,11 +32,17 @@ img {
 }
 
 .discord-thing{
-    height:50em;
-    display:flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50em;
+    opacity: 1;
+    opacity: var(--headerOpacity);
+    transform: scale(var(--headerScale));
+    
 }
 
 .discord-thing > a{
     display:block;
-    margin:17em 6em auto auto;
+    margin:17em 12% auto auto;
 }
