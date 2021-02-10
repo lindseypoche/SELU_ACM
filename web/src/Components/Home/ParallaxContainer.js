@@ -18,61 +18,7 @@ class ParallaxContainer extends Component {
     render() {
         return (
             <div className="parallax" ref={this.myRef}>
-                jhkasklcvnrfklvndfv <br/>
-                useDebugValue(feverv <br/>
-                wesfv <br/>
-                sdf <br/>
-                vs <br/>
-                fdv <br/>
-                sdfv <br/>
-                sdfv <br/>
-                sd <br/>
-                fv <br/>
-                sdfv) <br/>
-                jhkasklcvnrfklvndfv <br/>
-                useDebugValue(feverv <br/>
-                wesfv <br/>
-                sdf <br/>
-                vs <br/>
-                fdv <br/>
-                sdfv <br/>
-                sdfv <br/>
-                sd <br/>
-                fv <br/>
-                sdfv) <br/>
-                jhkasklcvnrfklvndfv <br/>
-                useDebugValue(feverv <br/>
-                wesfv <br/>
-                sdf <br/>
-                vs <br/>
-                fdv <br/>
-                sdfv <br/>
-                sdfv <br/>
-                sd <br/>
-                fv <br/>
-                sdfv) <br/>
-                jhkasklcvnrfklvndfv <br/>
-                useDebugValue(feverv <br/>
-                wesfv <br/>
-                sdf <br/>
-                vs <br/>
-                fdv <br/>
-                sdfv <br/>
-                sdfv <br/>
-                sd <br/>
-                fv <br/>
-                sdfv) <br/>
-                jhkasklcvnrfklvndfv <br/>
-                useDebugValue(feverv <br/>
-                wesfv <br/>
-                sdf <br/>
-                vs <br/>
-                fdv <br/>
-                sdfv <br/>
-                sdfv <br/>
-                sd <br/>
-                fv <br/>
-                sdfv) <br/>
+
             </div>
         )
     }

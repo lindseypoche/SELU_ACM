@@ -17,6 +17,7 @@ const EventCard = (props) => {
           <Button>Button</Button>
         </CardBody>
       </Card>
+      
     </div>
   );
 };
