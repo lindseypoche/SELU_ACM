@@ -19,6 +19,7 @@ func (blog *Blog) Save() (map[string]interface{}, error) {
 
 	result, err := collection.InsertOne(ctx, &blog)
 	if err != nil {
+		// return nil, err
 		return nil, err
 	}
 
