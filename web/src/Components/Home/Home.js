@@ -8,7 +8,8 @@ import discord from "../image/Discord.png";
 class Home extends Component {
   render() {
     return (
-      <div>
+      
+      <div className="homePage">
         <div className="discord-thing">
           <a href="https://discord.gg/g6bQXFMjs3">
             <img src={discord} />

@@ -7,7 +7,7 @@ class Officers extends Component {
     render() {
         return(
             <div className="officersPage">
-                <h1>Calendar</h1>
+                <h1>Officers</h1>
 
             </div>
         )
