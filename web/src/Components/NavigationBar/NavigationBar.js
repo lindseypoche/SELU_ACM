@@ -36,11 +36,17 @@ const NavigationBar = (props) => {
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
+          <NavItem>
+              <NavLink className="acm" tag={Link} to="/officers">Officers</NavLink>
+            </NavItem>
             <NavItem>
               <NavLink className="acm" tag={Link} to="/events">Events</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink className="acm" tag={Link} to="/about">About</NavLink>
+              <NavLink className="acm" tag={Link} to="/resources">Resources</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink className="acm" tag={Link} to="/calendar">Calendar</NavLink>
             </NavItem>
           </Nav>
           <Nav className="rightSide" navbar>
