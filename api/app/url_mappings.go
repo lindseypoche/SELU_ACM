@@ -14,6 +14,10 @@ func mapUrls() {
 	router.GET("/blogs", controllers.BlogsController.GetAll)
 
 	// user endpoints
-	// router.POST("/user", controllers.UsersController.Create)
-	// router.GET("/user:user_id", controllers.UsersController.Get)
+	router.POST("/users", controllers.UsersController.Create)
+	router.GET("/users/:user_id", controllers.UsersController.Get)
+	router.PUT("/users/:user_id", controllers.UsersController.Update)
+	router.PATCH("/users/:user_id", controllers.UsersController.Update)
+	router.DELETE("/users/:user_id", controllers.UsersController.Delete)
+	router.POST("/users/login", controllers.UsersController.Login)
 }
