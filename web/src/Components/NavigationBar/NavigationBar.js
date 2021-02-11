@@ -31,7 +31,7 @@ const NavigationBar = (props) => {
     <div className="navacmbg">
       <Navbar className="navacm" expand="md">
         <NavbarBrand>
-          <NavLink className="acm" tag={Link} to='/'><img style = {{height: '50px', width: '50px', marginRight: '10px'}} src = {acmlogo} />ACM</NavLink>
+          <NavLink className="acm" tag={Link} to='/'><img style = {{height: '50px', width: '50px', marginRight: '10px'}} src = {acmlogo} />Association for Computing Machinery</NavLink>
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
@@ -52,7 +52,8 @@ const NavigationBar = (props) => {
                 <DropdownItem className="acm" tag={Link} to="/members">
                   Members
                 </DropdownItem>
-                <DropdownItem className="acm">
+                
+                <DropdownItem className="acm" tab={Link} to="/events">
                   Events
                 </DropdownItem>
                 <DropdownItem className="acm">
