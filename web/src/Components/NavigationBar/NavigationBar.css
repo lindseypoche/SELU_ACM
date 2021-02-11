@@ -24,6 +24,10 @@
     color: azure !important;
 }
 
+.nav-link:hover{
+    color: rgb(4, 251, 251) !important;
+}
+
 .acm{
     color: black;
 }

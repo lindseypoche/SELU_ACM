@@ -18,7 +18,7 @@ const VideoPlayback = () => {
                     objectFit: 'cover',
                     // transform: 'translate(-50%, -50%)',
                     zIndex: '-1',
-                    filter:"grayscale(55%)",
+                    filter:"grayscale(30%)",
                 }}
                 >
                     <source src= {finalcut} type='video/mp4'/>

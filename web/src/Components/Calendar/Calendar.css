@@ -1,4 +1,4 @@
-.eventsPage{
+.calendarPage{
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
     width:93%;
@@ -13,11 +13,4 @@
     padding: 3em;
        
     top: 400px
-} 
-
-.eventContainer{
-    display: flex;
-    flex-direction: row;
-    column-gap: 2%;
 }
-

@@ -31,16 +31,22 @@ const NavigationBar = (props) => {
     <div className="navacmbg">
       <Navbar className="navacm" expand="md">
         <NavbarBrand>
-          <NavLink className="acm" tag={Link} to='/'><img style = {{height: '50px', width: '50px', marginRight: '10px'}} src = {acmlogo} />ACM</NavLink>
+          <NavLink className="acm" tag={Link} to='/'><img style = {{height: '50px', width: '50px', marginRight: '10px'}} src = {acmlogo} />Association for Computing Machinery</NavLink>
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
+          <NavItem>
+              <NavLink className="acm" tag={Link} to="/officers">Officers</NavLink>
+            </NavItem>
             <NavItem>
               <NavLink className="acm" tag={Link} to="/events">Events</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink className="acm" tag={Link} to="/about">About</NavLink>
+              <NavLink className="acm" tag={Link} to="/resources">Resources</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink className="acm" tag={Link} to="/calendar">Calendar</NavLink>
             </NavItem>
           </Nav>
           <Nav className="rightSide" navbar>
@@ -52,7 +58,8 @@ const NavigationBar = (props) => {
                 <DropdownItem className="acm" tag={Link} to="/members">
                   Members
                 </DropdownItem>
-                <DropdownItem className="acm">
+                
+                <DropdownItem className="acm" tab={Link} to="/events">
                   Events
                 </DropdownItem>
                 <DropdownItem className="acm">
