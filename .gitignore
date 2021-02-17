@@ -1,5 +1,7 @@
-# resources 
-resources
+# Temp
+**/config.json
+docker-compose.yml
+**/Dockerfile
 
 # Compiled source #
 ###################
