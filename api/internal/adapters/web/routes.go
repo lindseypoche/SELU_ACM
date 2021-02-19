@@ -2,8 +2,6 @@ package web
 
 func mapUrls() {
 
-	httpRouter.GET("/ping", PingController.Ping)
-
 	// blog endpoints
 	httpRouter.POST("/blogs", blogHandler.Create)
 	httpRouter.GET("/blogs/:blog_id", blogHandler.Get)
