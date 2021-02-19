@@ -36,7 +36,7 @@ type config struct {
 // Init initializes the bot on start up
 func Init() {
 
-	file, err := ioutil.ReadFile("../../internal/clients/discord/config.json")
+	file, err := ioutil.ReadFile("../../internal/adapters/discord/config.json")
 	if err != nil {
 		log.Fatal("Could not read json file: ", err)
 	}
@@ -62,6 +62,8 @@ func Init() {
 
 	// Register the messageCreate func as a callback for MessageCreate events.
 	bot.AddHandler(messageCreate)
+	bot.AddHandler(messageUpdate)
+	bot.AddHandler(messageReacted)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = bot.Open()
@@ -81,28 +83,4 @@ func Init() {
 
 func (s *discordSession) setBot(session *discordgo.Session) {
 	s.Bot = session
-}
-
-func GetSession() discordBotInterface {
-	return Bot
-}
-
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the authenticated bot has access to.
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-	// Ignore all messages created by the bot itself
-	// This isn't required in this specific example but it's a good practice.
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
-
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
 }
