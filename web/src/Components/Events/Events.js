@@ -16,6 +16,9 @@ class Events extends Component {
             <EventCard/>
             <EventCard/>
         </div>
+
+
+        
         */}
       </div>
     )
