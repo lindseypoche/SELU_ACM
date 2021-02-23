@@ -10,7 +10,16 @@ class Events extends Component {
     return (
       <div className="eventsPage"> 
         <h1>Events</h1>
+        {/*
+        <div className="eventContainer">
+            <EventCard/>
+            <EventCard/>
+            <EventCard/>
+        </div>
+
+
         
+        */}
       </div>
     )
   }
