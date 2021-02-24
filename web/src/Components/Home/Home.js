@@ -5,6 +5,7 @@ import HomeCaro from "./HomeCaro.js";
 import ParallaxContainer from "./ParallaxContainer";
 import discord from "../image/Discord.png";
 
+
 class Home extends Component {
   render() {
     return (
@@ -16,6 +17,7 @@ class Home extends Component {
           </a>
         </div>
         <ParallaxContainer />
+        
       </div>
     );
   }
