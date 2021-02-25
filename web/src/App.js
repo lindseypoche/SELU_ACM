@@ -12,7 +12,7 @@ import Resources from './Components/Resources/Resources';
 
 
 
-import VideoPlayback from './Components/video/VideoPlayback.js'
+import VideoPlayback from './Components/video/VideoPlayback.js';
 
 
 function App() {
