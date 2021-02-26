@@ -10,7 +10,6 @@ import Officers from './Components/Officers/Officers.js'
 import Events from './Components/Events/Events';
 
 
-import VideoPlayback from './Components/video/VideoPlayback.js'
 
 
 function App() {
@@ -18,7 +17,6 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <NavigationBar />
-        <VideoPlayback />
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/login' component={Login} />

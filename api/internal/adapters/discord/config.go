@@ -27,10 +27,11 @@ type discordSession struct {
 }
 
 type config struct {
-	Token     string `json:"token"`
-	Prefix    string `json:"prefix"`
-	ChannelID string `json:"channel_id"`
-	Guild     string `json:"guild"`
+	Token    string            `json:"token"`
+	Owners   []string          `json:"owners"`
+	Prefix   string            `json:"prefix"`
+	Channels map[string]string `json:"channels"`
+	Guild    string            `json:"guild"`
 }
 
 // Init initializes the bot on start up
@@ -60,10 +61,15 @@ func Init() {
 
 	Bot.setBot(bot)
 
-	// Register the messageCreate func as a callback for MessageCreate events.
-	bot.AddHandler(messageCreate)
-	bot.AddHandler(messageUpdate)
-	bot.AddHandler(messageReacted)
+	// Register handlers
+	bot.AddHandler(MessageCreated)
+	bot.AddHandler(MessageUpdated)
+	bot.AddHandler(MessageReactionAdded)
+	bot.AddHandler(MessageReactionRemoved)
+	bot.AddHandler(GuildMemberAdded)
+	bot.AddHandler(GuildMemberRemoved)
+	bot.AddHandler(GuildMemberUpdated)
+	bot.AddHandler(UserUpdated)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = bot.Open()

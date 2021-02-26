@@ -1,4 +1,4 @@
-package discord
+package domain
 
 /*
 Discord objects and fields
@@ -34,17 +34,18 @@ type Channel struct {
 
 // A Message stores all data related to a specific Discord message.
 type Message struct {
-	ID              string        `json:"id"`
-	ChannelID       string        `json:"channel_id"`
-	GuildID         string        `json:"guild_id,omitempty"`
-	Content         string        `json:"content"`
-	Timestamp       Timestamp     `json:"timestamp"`
-	EditedTimestamp Timestamp     `json:"edited_timestamp"`
-	MentionRoles    []string      `json:"mention_roles"`
-	Author          *User         `json:"author"`
-	Embeds          *MessageEmbed `json:"embeds"`
-	Mentions        []*User       `json:"mentions"`
-	Member          *Member       `json:"member"`
+	ID              string               `json:"id"`
+	ChannelID       string               `json:"channel_id"`
+	GuildID         string               `json:"guild_id,omitempty"`
+	Content         string               `json:"content"`
+	Timestamp       Timestamp            `json:"timestamp"`
+	EditedTimestamp Timestamp            `json:"edited_timestamp"`
+	MentionRoles    []string             `json:"mention_roles"`
+	Author          *User                `json:"author"`
+	Attachments     []*MessageAttachment `json:"attachments"`
+	Embeds          *MessageEmbed        `json:"embeds"`
+	Mentions        []*User              `json:"mentions"`
+	Member          *Member              `json:"member"`
 }
 
 // A User stores all data for an individual Discord user.
@@ -62,7 +63,6 @@ type Member struct {
 	GuildID  string    `json:"guild_id"`
 	JoinedAt Timestamp `json:"joined_at"`
 	Nick     string    `json:"nick"`
-	Deaf     bool      `json:"deaf"`
 	User     *User     `json:"user"`
 	Roles    []string  `json:"roles"`
 }

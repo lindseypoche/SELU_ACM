@@ -1,7 +1,20 @@
 {
-    "Token": "ODExNzQ5MDMxNDI3NzAyODA0.YC2uMg.S3_v6GBJYNBFrJAInLd6otXBZ3E",
-    "Owner": ["150114466401484800", "614229479841202176", "552882813473390635", "387421526137372673"],
-    "ChannelId": "780008059916517386",
-    "Guild": "123",
+    "Token": "ODExNzQ5MDMxNDI3NzAyODA0.YC2uMg.o_4iVRmu7KEAiWfmlCZDAwJjgCQ",
+    "Owner": [
+        "150114466401484800",
+        "614229479841202176",
+        "552882813473390635",
+        "387421526137372673"
+    ],
+    "ChannelId": [
+        "814352410343899138",
+        "",
+        ""
+    ],
+    "Roles": [
+        "", 
+        ""
+    ],
+    "Guild": "780008059916517386",
     "Prefix": "!"
 }
