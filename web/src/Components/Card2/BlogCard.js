@@ -18,10 +18,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: 345,
+    maxWidth: 800,
+    marginBottom: 50,
+    marginTop: 50,
   },
   media: {
-    height: 0,
+    height: 'auto',
     paddingTop: '56.25%', // 16:9
   },
   expand: {
@@ -47,15 +49,31 @@ export default function BlogCard(props) {
     setExpanded(!expanded);
   };
 
+  const hasAvatar = (props.dataobj.author.avatar.image_url != null);
+  let authorAvatar;
+
+  if (hasAvatar) {
+    authorAvatar = <Avatar 
+          src={props.dataobj.author.avatar.image_url} 
+          aria-label="recipe" 
+          className={classes.avatar}>
+            {props.dataobj.author.avatar.image_url}
+          </Avatar>;
+  } else {
+    authorAvatar =  <Avatar 
+     // display default avatar image (eg ACM image) 
+        aria-label="recipe" 
+        className={classes.avatar}>
+        src={props.dataobj.author.avatar.image_url} 
+    </Avatar>;
+  }
+
   return (
-    <div className= "kevin">
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
-            {props.dataobj.author.avatar}
-          </Avatar>
-        }
+          authorAvatar
+        } 
         action={
           <IconButton aria-label="settings">
             <MoreVertIcon />
@@ -64,12 +82,21 @@ export default function BlogCard(props) {
         title={props.dataobj.content.substring(0,15)}
         subheader={props.dataobj.timestamp}
       />
-      <CardMedia
-        className={classes.media}
-        // fix this. attachments is an array. fyi
-        // image={props.dataobj.attachments.url}
-        // title={props.dataobj.attachments.url}
-      />
+
+          {(props.dataobj.attachments != null) ? (
+          <CardMedia 
+            className={classes.media}
+            image={props.dataobj.attachments.url}
+            title={props.dataobj.content[15]}
+            />
+          ) : (
+            <CardMedia 
+            className={classes.media}
+            style={{display: 'none'}}
+            title={props.dataobj.content[15]}
+            />
+          )}
+
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
           {props.dataobj.content}
@@ -96,6 +123,5 @@ export default function BlogCard(props) {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
       </Collapse>
     </Card>
-    </div>
   );
 }

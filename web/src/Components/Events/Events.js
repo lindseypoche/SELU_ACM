@@ -30,7 +30,7 @@ function Events(props) {
     }
 
     return (
-    <div >
+    <div className='eventContainer'>
          { cards } 
     </div>
     );
