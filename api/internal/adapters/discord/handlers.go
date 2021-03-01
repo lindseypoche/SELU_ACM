@@ -1,14 +1,8 @@
 package discord
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"image"
-	"image/jpeg"
-	_ "image/png"
-	"log"
-	"os"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/lindseypoche/SELU_ACM/api/internal/adapters/storage"
@@ -29,35 +23,16 @@ func validateAuthorAndRole(authorID string, botID string, roles []string) bool {
 		return false
 	}
 
-	for i, role := range roles {
-		fmt.Printf("%d role: %s\n", i, role)
-		// @ACM role id
-		if role == "814656414114643969" {
-			return true
-		}
-	}
-	return false
-}
+	return true
 
-func serveFrames(imgByte []byte) {
-
-	img, _, err := image.Decode(bytes.NewReader(imgByte))
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	out, _ := os.Create("./img.jpeg")
-	defer out.Close()
-
-	var opts jpeg.Options
-	opts.Quality = 1
-
-	err = jpeg.Encode(out, img, &opts)
-	//jpeg.Encode(out, img, nil)
-	if err != nil {
-		log.Println(err)
-	}
-
+	// for i, role := range roles {
+	// 	fmt.Printf("%d role: %s\n", i, role)
+	// 	// @ACM role id
+	// 	if role == "814656414114643969" {
+	// 		return true
+	// 	}
+	// }
+	// return false
 }
 
 func validateChannel() {
@@ -71,6 +46,21 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	var attachment *domain.MessageAttachment
+
+	if len(m.Attachments) > 0 {
+		attachment = &domain.MessageAttachment{
+			ID:       m.Attachments[0].ID,
+			URL:      m.Attachments[0].URL,
+			Filename: m.Attachments[0].Filename,
+			Width:    m.Attachments[0].Width,
+			Height:   m.Attachments[0].Height,
+			Size:     m.Attachments[0].Size,
+		}
+	} else {
+		attachment = nil
+	}
+
 	msg := domain.Message{
 		ID:              m.ID,
 		ChannelID:       m.ChannelID,
@@ -79,46 +69,25 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Timestamp:       domain.Timestamp(m.Timestamp),
 		EditedTimestamp: domain.Timestamp(m.EditedTimestamp),
 		MentionRoles:    m.MentionRoles,
-		// Attachments: []*domain.MessageAttachment{
-		// only get first attachment. should replace with for loop function
-		// &domain.MessageAttachment{
-		// 	ID:       m.Attachments[0].ID,
-		// 	URL:      m.Attachments[0].URL,
-		// 	Filename: m.Attachments[0].Filename,
-		// 	Width:    m.Attachments[0].Width,
-		// 	Height:   m.Attachments[0].Height,
-		// 	Size:     m.Attachments[0].Size,
-		// },
-		// },
+		Attachment:      attachment,
 		Author: &domain.User{
 			ID:            m.Author.ID,
 			Username:      m.Author.Username,
 			Discriminator: m.Author.Discriminator,
-			Avatar:        m.Author.Avatar,
-			Email:         m.Author.Email,
+			Avatar: domain.Avatar{
+				ID:       m.Author.Avatar,
+				ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
+			},
+			Email: m.Author.Email,
 		},
 	}
-
-	// TODO: decode image and store on server. store path in db.
-	// img, err := s.UserAvatarDecode(m.Member.User)
-	// img, err := s.UserAvatarDecode(s.State.User)
-	// if err != nil {
-	// 	_, _ = s.ChannelMessageSend(m.ChannelID, err.Error())
-	// 	return
-	// }
-	// image.DecodeConfig(image.DecodeConfig(io.Reader))
-	// fmt.Println("img:>>> ", img)
-
-	// result, err := domain.MessageSrvc.CreateMessage(msg)
-	result, err := messageService.CreateMessage(msg)
-	// b, err := json.Marshal(&msg)
+	b, err := json.Marshal(&msg)
 	if err != nil {
 		fmt.Println(err)
-		_, _ = s.ChannelMessageSend(m.ChannelID, err.Error())
 		return
 	}
-	_, _ = s.ChannelMessageSend(m.ChannelID, result.Success)
-	// fmt.Println(string(b))
+	fmt.Println(string(b))
+	messageService.CreateMessage(msg)
 }
 
 // MessageUpdated handles messages updated
@@ -138,8 +107,10 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 			ID:            m.Author.ID,
 			Username:      m.Author.Username,
 			Discriminator: m.Author.Discriminator,
-			Avatar:        m.Author.Avatar,
-			Email:         m.Author.Email,
+			Avatar: domain.Avatar{
+				ID:       m.Author.Avatar,
+				ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
+			},
 		},
 	}
 
