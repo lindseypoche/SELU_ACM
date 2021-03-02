@@ -4,6 +4,7 @@ import "./Home.css";
 import HomeCaro from "./HomeCaro.js";
 import ParallaxContainer from "./ParallaxContainer";
 import discord from "../image/Discord.png";
+import VideoPlayback from '../video/VideoPlayback.js'
 
 
 class Home extends Component {
@@ -11,6 +12,8 @@ class Home extends Component {
     return (
       
       <div className="homePage">
+
+        <VideoPlayback />
         <div className="discord-thing">
           <a href="https://discord.gg/g6bQXFMjs3">
             <img src={discord} />

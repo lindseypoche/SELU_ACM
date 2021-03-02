@@ -3,11 +3,11 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/lindseypoche/SELU_ACM/api/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -34,7 +34,7 @@ func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
 }
 
 // NewMongoRepo creates a new mongo repository with batteries included
-func NewMongoRepo(mongoURL, mongoDB string, mongoTimeout int) domain.BlogRepository {
+func NewMongoRepo(mongoURL, mongoDB string, mongoTimeout int) domain.MessageRepository {
 	repo := &mongoRepo{
 		timeout:  time.Duration(mongoTimeout) * time.Second,
 		database: mongoDB,
@@ -48,52 +48,51 @@ func NewMongoRepo(mongoURL, mongoDB string, mongoTimeout int) domain.BlogReposit
 }
 
 // Save attempts to save a blog into the database
-func (repo *mongoRepo) Save(blog domain.Blog) (map[string]interface{}, error) {
+func (repo *mongoRepo) Save(message domain.Message) (*domain.Response, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
 	defer cancel()
 
-	collection := repo.client.Database("acm").Collection("blogs")
+	collection := repo.client.Database("acm").Collection("messages")
 
-	result, err := collection.InsertOne(ctx, &blog)
+	// no need to return message
+	_, err := collection.InsertOne(ctx, &message)
 	if err != nil {
 		return nil, err
 	}
 
-	r := result.InsertedID.(primitive.ObjectID).Hex()
-	m := make(map[string]interface{})
-	m["id"] = r
+	m := &domain.Response{Success: fmt.Sprintf("%s successfully stored in db", message.ID)}
 	return m, nil
 }
 
 // GetByID attempts to get a blog by id from the database
-func (repo *mongoRepo) GetByID(blogID string) (*domain.Blog, error) {
+func (repo *mongoRepo) GetByID(messageID string) (*domain.Message, error) {
 
-	id, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return nil, err
-	}
+	// id, err := primitive.ObjectIDFromHex(messageID)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
 	defer cancel()
 
-	collection := repo.client.Database("acm").Collection("blogs")
+	collection := repo.client.Database("acm").Collection("messages")
 
-	blog := &domain.Blog{}
-	result := collection.FindOne(ctx, bson.M{"_id": id})
+	message := &domain.Message{}
+	result := collection.FindOne(ctx, bson.M{"id": messageID})
 
-	err = result.Decode(blog)
+	err := result.Decode(message)
 	if err != nil {
 		return nil, err
 	}
-	return blog, nil
+	return message, nil
 }
 
 // GetAll gets all blogs in the database
-func (repo *mongoRepo) GetAll() (*[]domain.Blog, error) {
+func (repo *mongoRepo) GetAll() (*[]domain.Message, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
 	defer cancel()
 
-	collection := repo.client.Database("acm").Collection("blogs")
+	collection := repo.client.Database("acm").Collection("messages")
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
@@ -101,17 +100,17 @@ func (repo *mongoRepo) GetAll() (*[]domain.Blog, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var blogs []domain.Blog
+	var messages []domain.Message
 	for cursor.Next(ctx) {
-		var blog domain.Blog
-		cursor.Decode(&blog)
-		blogs = append(blogs, blog)
+		var message domain.Message
+		cursor.Decode(&message)
+		messages = append(messages, message)
 	}
 
-	if len(blogs) < 1 {
-		return nil, errors.New("no blogs found")
+	if len(messages) < 1 {
+		return nil, errors.New("no messages found")
 	}
-	return &blogs, nil
+	return &messages, nil
 }
 
 // GetByAuthor ...

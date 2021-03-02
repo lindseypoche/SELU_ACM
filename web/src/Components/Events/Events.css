@@ -16,8 +16,9 @@
 } 
 
 .eventContainer{
-    display: flex;
-    flex-direction: row;
+    display: inline-block;
+    text-align: center;
+    /* flex-direction: row; */
     column-gap: 2%;
 }
 

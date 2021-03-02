@@ -2,6 +2,8 @@
 **/config.json
 docker-compose.yml
 **/Dockerfile
+*.drawio
+*cake.json
 
 # Compiled source #
 ###################

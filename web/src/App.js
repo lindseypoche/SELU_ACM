@@ -12,15 +12,12 @@ import Resources from './Components/Resources/Resources';
 
 
 
-import VideoPlayback from './Components/video/VideoPlayback.js';
-
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <NavigationBar />
-        <VideoPlayback />
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/login' component={Login} />
