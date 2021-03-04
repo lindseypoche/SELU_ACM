@@ -1,4 +1,4 @@
-package discord
+package domain
 
 /*
 Discord objects and fields
@@ -34,17 +34,24 @@ type Channel struct {
 
 // A Message stores all data related to a specific Discord message.
 type Message struct {
-	ID              string        `json:"id"`
-	ChannelID       string        `json:"channel_id"`
-	GuildID         string        `json:"guild_id,omitempty"`
-	Content         string        `json:"content"`
-	Timestamp       Timestamp     `json:"timestamp"`
-	EditedTimestamp Timestamp     `json:"edited_timestamp"`
-	MentionRoles    []string      `json:"mention_roles"`
-	Author          *User         `json:"author"`
-	Embeds          *MessageEmbed `json:"embeds"`
-	Mentions        []*User       `json:"mentions"`
-	Member          *Member       `json:"member"`
+	ID              string             `json:"id" bson:"id"`
+	ChannelID       string             `json:"channel_id" bson:"channel_id"`
+	GuildID         string             `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
+	Content         string             `json:"content" bson:"content"`
+	Timestamp       int                `json:"timestamp" bson:"timestamp"`
+	EditedTimestamp int                `json:"edited_timestamp,omitempty" bson:"edited_timestamp,omitempty"`
+	MentionRoles    []string           `json:"mention_roles,omitempty" bson:"mention_roles,omitempty"`
+	Author          *User              `json:"author"`
+	Attachment      *MessageAttachment `json:"attachments" bson:"attachments,omitempty"`
+	Embeds          *MessageEmbed      `json:"embeds,omitempty" bson:"embeds,omitemtpy"`
+	Mentions        []*User            `json:"mentions,omitempty" bson:"mentions,omitempty"`
+
+	Reactions []MessageReaction `json:"reactions,omitempty" bson:"reactions,omitempty"`
+}
+
+// Author is a pointer to a User
+type Author struct {
+	*User
 }
 
 // A User stores all data for an individual Discord user.
@@ -52,7 +59,7 @@ type User struct {
 	ID            string `json:"id"`
 	Username      string `json:"username"`
 	Discriminator string `json:"discriminator"`
-	Avatar        string `json:"avatar"`
+	Avatar        Avatar `json:"avatar"`
 	Email         string `json:"email"`
 }
 
@@ -62,9 +69,14 @@ type Member struct {
 	GuildID  string    `json:"guild_id"`
 	JoinedAt Timestamp `json:"joined_at"`
 	Nick     string    `json:"nick"`
-	Deaf     bool      `json:"deaf"`
 	User     *User     `json:"user"`
 	Roles    []string  `json:"roles"`
+}
+
+// Avatar ...
+type Avatar struct {
+	ID       string `json:"id"`
+	ImageURL string `json:"image_url"`
 }
 
 // A MessageAttachment stores data for message attachments.
@@ -77,25 +89,26 @@ type MessageAttachment struct {
 	Size     int    `json:"size"`
 }
 
-// MessageReactions holds a reactions object for a message.
-type MessageReactions struct {
-	Count int    `json:"count"`
-	Emoji *Emoji `json:"emoji"`
-}
-
 // MessageReaction ...
 type MessageReaction struct {
-	UserID    string `json:"user_id"`
-	MessageID string `json:"message_id"`
-	Emoji     Emoji  `json:"emoji"`
-	ChannelID string `json:"channel_id"`
-	GuildID   string `json:"guild_id,omitempty"`
+	UserID    string `json:"user_id" bson:"user_id"`
+	MessageID string `json:"message_id" bson:"message_id,omitempty"`
+	Emoji     Emoji  `json:"emoji" bson:"emoji"`
+	ChannelID string `json:"channel_id" bson:"channel_id,omitempty"`
+	GuildID   string `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
 }
 
 // Emoji struct holds data related to Emoji's
 type Emoji struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID    string `json:"id,omitempty" bson:"id,omitempty"`
+	Name  string `json:"name" bson:"name"`
+	Count int    `json:"count" bson:"count,omitempty"`
+}
+
+// EmojiUpdate is used to update a message's emojis
+type EmojiUpdate struct {
+	MessageID string `json:"-"`
+	Emoji     Emoji  `json:"-"`
 }
 
 // An MessageEmbed stores data for message embeds.
@@ -104,7 +117,7 @@ type MessageEmbed struct {
 	Type        string              `json:"type,omitempty"`
 	Title       string              `json:"title,omitempty"`
 	Description string              `json:"description,omitempty"`
-	Timestamp   Timestamp           `json:"timestamp,omitempty"`
+	Timestamp   int                 `json:"timestamp,omitempty"`
 	Color       int                 `json:"color,omitempty"`
 	Image       *MessageEmbedImage  `json:"image,omitempty"`
 	Video       *MessageEmbedVideo  `json:"video,omitempty"`
@@ -141,4 +154,4 @@ type Role struct {
 }
 
 // Timestamp stores a timestamp, as sent by the Discord API.
-type Timestamp string
+type Timestamp int

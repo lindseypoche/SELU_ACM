@@ -8,9 +8,9 @@ import Login from './Components/LogIn/Login.js';
 import Calendar from './Components/Calendar/Calendar.js';
 import Officers from './Components/Officers/Officers.js'
 import Events from './Components/Events/Events';
+import Resources from './Components/Resources/Resources';
 
 
-import VideoPlayback from './Components/video/VideoPlayback.js'
 
 
 function App() {
@@ -18,13 +18,13 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <NavigationBar />
-        <VideoPlayback />
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/login' component={Login} />
           <Route exact path='/events' component={Events} />
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
+          <Route exact path='/resources' component={Resources} />
 
         </Switch>
       </BrowserRouter>

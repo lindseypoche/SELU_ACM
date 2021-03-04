@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	// Bot ...
-	Bot   discordBotInterface = &discordSession{}
-	BotID string
+	// Bot is a session
+	Bot discordBotInterface = &discordSession{}
+	// Config is the bot configuration
+	Config config
 )
 
 type discordBotInterface interface {
@@ -27,10 +28,13 @@ type discordSession struct {
 }
 
 type config struct {
-	Token     string `json:"token"`
-	Prefix    string `json:"prefix"`
-	ChannelID string `json:"channel_id"`
-	Guild     string `json:"guild"`
+	Token    string   `json:"token"`
+	BotID    string   `json:"bot_id"`
+	Owners   []string `json:"owners"`
+	Channels []string `json:"channels"`
+	Roles    []string `json:"roles"`
+	Guild    string   `json:"guild"`
+	Prefix   string   `json:"prefix"`
 }
 
 // Init initializes the bot on start up
@@ -41,18 +45,17 @@ func Init() {
 		log.Fatal("Could not read json file: ", err)
 	}
 
-	var conf config
-	err = json.Unmarshal(file, &conf)
+	err = json.Unmarshal(file, &Config)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// set envs
-	os.Setenv("BOT_TOKEN", conf.Token)
+	os.Setenv("BOT_TOKEN", Config.Token)
 
 	fmt.Println("Initializing bot...")
-	bot, err := discordgo.New("Bot " + conf.Token)
+	bot, err := discordgo.New("Bot " + Config.Token)
 	if err != nil {
 		fmt.Println("error making new bot:", err)
 		return
@@ -60,10 +63,15 @@ func Init() {
 
 	Bot.setBot(bot)
 
-	// Register the messageCreate func as a callback for MessageCreate events.
-	bot.AddHandler(messageCreate)
-	bot.AddHandler(messageUpdate)
-	bot.AddHandler(messageReacted)
+	// Register handlers
+	bot.AddHandler(MessageCreated)
+	bot.AddHandler(MessageUpdated)
+	bot.AddHandler(MessageReactionAdded)
+	bot.AddHandler(MessageReactionRemoved)
+	bot.AddHandler(GuildMemberAdded)
+	bot.AddHandler(GuildMemberRemoved)
+	bot.AddHandler(GuildMemberUpdated)
+	bot.AddHandler(UserUpdated)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = bot.Open()

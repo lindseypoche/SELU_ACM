@@ -8,7 +8,7 @@ class Calendar extends Component {
         return(
             <div className="calendarPage">
                 <h1>Calendar</h1>
-                
+
             </div>
             
         )
