@@ -1,7 +1,9 @@
 # Temp
 **/config.json
-docker-compose.yml
 **/Dockerfile
+cake.json
+config.json
+botconf.json
 
 # Compiled source #
 ###################

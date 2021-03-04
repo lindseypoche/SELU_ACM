@@ -52,7 +52,13 @@ func Init() {
 	}
 
 	// set envs
-	os.Setenv("BOT_TOKEN", Config.Token)
+	// os.Setenv("BOT_TOKEN", Config.Token)
+	token := os.Getenv("BOT_TOKEN")
+	if token == "" {
+		fmt.Println("Token value env variable is empty")
+		return
+	}
+	Config.Token = token
 
 	fmt.Println("Initializing bot...")
 	bot, err := discordgo.New("Bot " + Config.Token)
