@@ -10,6 +10,6 @@ type MessageRepository interface {
 	GetByAuthor(string) (*[]Message, rest.Err)
 	Update(*Message) (*Response, rest.Err)
 	AddReaction(MessageReaction) rest.Err
-	Delete() rest.Err
+	Delete(string) rest.Err
 	DeleteReaction(MessageReaction) rest.Err
 }

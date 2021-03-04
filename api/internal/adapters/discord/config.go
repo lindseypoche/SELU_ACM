@@ -71,6 +71,7 @@ func Init() {
 
 	// Register handlers
 	bot.AddHandler(MessageCreated)
+	bot.AddHandler(MessageDeleted)
 	bot.AddHandler(MessageUpdated)
 	bot.AddHandler(MessageReactionAdded)
 	bot.AddHandler(MessageReactionRemoved)

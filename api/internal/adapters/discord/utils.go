@@ -7,7 +7,7 @@ func Validate(s *discordgo.Session, m *discordgo.Message) bool {
 
 	hasAccess := false
 	// validate user is not bot
-	if m.Author.ID == Config.BotID {
+	if m.Author.ID == s.State.User.ID || m.Author.Bot {
 		return hasAccess
 	}
 

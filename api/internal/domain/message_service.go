@@ -13,7 +13,7 @@ type MessageService interface {
 	GetAllMessages() (*[]Message, rest.Err)
 	UpdateMessage(*Message) (*Response, rest.Err)
 	UpdateReaction(MessageReaction) rest.Err
-	DeleteMessage() rest.Err
+	DeleteMessage(string) rest.Err
 	RemoveReaction(MessageReaction) rest.Err
 }
 
@@ -80,8 +80,12 @@ func (s *messageService) UpdateMessage(message *Message) (*Response, rest.Err) {
 	return resp, nil
 }
 
-// DeleteMessage ...
-func (s *messageService) DeleteMessage() rest.Err {
+// DeleteMessage deletes a message using the id
+func (s *messageService) DeleteMessage(messageID string) rest.Err {
+	err := s.messageRepo.Delete(messageID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

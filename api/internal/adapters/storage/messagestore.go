@@ -209,8 +209,20 @@ func (repo *mongoRepo) AddReaction(r domain.MessageReaction) rest.Err {
 	return nil
 }
 
-// Delete ...
-func (repo *mongoRepo) Delete() rest.Err {
+// Delete deletes a message from the database
+func (repo *mongoRepo) Delete(messageID string) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("messages")
+
+	filter := bson.M{"id": messageID}
+
+	// delete item
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return rest.NewInternalServerError("error when removing emoji in database", err)
+	}
 	return nil
 }
 
