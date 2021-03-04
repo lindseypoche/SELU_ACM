@@ -1,8 +1,8 @@
 package discord
 
 import (
-	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/lindseypoche/SELU_ACM/api/internal/adapters/storage"
@@ -15,61 +15,49 @@ var (
 	messageService    domain.MessageService    = domain.NewMessageService(messageRepository)
 )
 
-func validateAuthorAndRole(authorID string, botID string, roles []string) bool {
-	if authorID == botID {
-		return false
-	}
-	if roles == nil {
-		return false
-	}
+const (
+	discordEpoch int = 1420070400000
+)
 
-	return true
-
-	// for i, role := range roles {
-	// 	fmt.Printf("%d role: %s\n", i, role)
-	// 	// @ACM role id
-	// 	if role == "814656414114643969" {
-	// 		return true
-	// 	}
-	// }
-	// return false
+func getAttachment(attachments []*discordgo.MessageAttachment) *domain.MessageAttachment {
+	if len(attachments) > 0 {
+		return &domain.MessageAttachment{
+			ID:       attachments[0].ID,
+			URL:      attachments[0].URL,
+			Filename: attachments[0].Filename,
+			Width:    attachments[0].Width,
+			Height:   attachments[0].Height,
+			Size:     attachments[0].Size,
+		}
+	}
+	return nil
 }
 
-func validateChannel() {
-
+// snowflakeToUnix converts snowflake id to a unix
+func snowflakeToUnix(snowflake string) int {
+	v, _ := strconv.Atoi(snowflake)
+	x := v>>22 + discordEpoch
+	s := strconv.Itoa(x)
+	v, _ = strconv.Atoi(s[:len(s)-3])
+	return v
 }
 
-// MessageCreated handles messages created
+// MessageCreated handles messages created (WORKING)
 func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	if ok := validateAuthorAndRole(m.Author.ID, s.State.User.ID, m.Member.Roles); !ok {
+	if ok := Validate(s, m.Message); !ok {
 		return
 	}
-
-	var attachment *domain.MessageAttachment
-
-	if len(m.Attachments) > 0 {
-		attachment = &domain.MessageAttachment{
-			ID:       m.Attachments[0].ID,
-			URL:      m.Attachments[0].URL,
-			Filename: m.Attachments[0].Filename,
-			Width:    m.Attachments[0].Width,
-			Height:   m.Attachments[0].Height,
-			Size:     m.Attachments[0].Size,
-		}
-	} else {
-		attachment = nil
-	}
+	// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your message was not posted to the web")
 
 	msg := domain.Message{
-		ID:              m.ID,
-		ChannelID:       m.ChannelID,
-		GuildID:         m.GuildID,
-		Content:         m.Content,
-		Timestamp:       domain.Timestamp(m.Timestamp),
-		EditedTimestamp: domain.Timestamp(m.EditedTimestamp),
-		MentionRoles:    m.MentionRoles,
-		Attachment:      attachment,
+		ID:           m.ID,
+		ChannelID:    m.ChannelID,
+		GuildID:      m.GuildID,
+		Content:      m.Content,
+		Timestamp:    snowflakeToUnix(m.ID),
+		MentionRoles: m.MentionRoles,
+		Attachment:   getAttachment(m.Attachments),
 		Author: &domain.User{
 			ID:            m.Author.ID,
 			Username:      m.Author.Username,
@@ -81,70 +69,74 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Email: m.Author.Email,
 		},
 	}
-	b, err := json.Marshal(&msg)
+
+	resp, err := messageService.CreateMessage(msg)
 	if err != nil {
-		fmt.Println(err)
+		_, _ = s.ChannelMessageSend(m.ChannelID, err.Error())
 		return
 	}
-	fmt.Println(string(b))
-	messageService.CreateMessage(msg)
+	_, _ = s.ChannelMessageSend(m.ChannelID, resp.Success)
 }
 
-// MessageUpdated handles messages updated
+// MessageUpdated handles messages updated (WORKING)
 func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
-	validateAuthorAndRole(m.Author.ID, s.State.User.ID, m.Member.Roles)
-
-	msg := domain.Message{
-		ID:              m.Author.ID,
-		ChannelID:       m.ChannelID,
-		GuildID:         m.GuildID,
-		Content:         m.Content,
-		Timestamp:       domain.Timestamp(m.Timestamp),
-		EditedTimestamp: domain.Timestamp(m.EditedTimestamp),
-		MentionRoles:    m.MentionRoles,
-		Author: &domain.User{
-			ID:            m.Author.ID,
-			Username:      m.Author.Username,
-			Discriminator: m.Author.Discriminator,
-			Avatar: domain.Avatar{
-				ID:       m.Author.Avatar,
-				ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
-			},
-		},
-	}
-
-	b, err := json.Marshal(&msg)
-	if err != nil {
-		fmt.Println(err)
+	if ok := Validate(s, m.Message); !ok {
+		// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your edit was not updated on the web")
 		return
 	}
-	fmt.Println(string(b))
+
+	msg := domain.Message{
+		ID:              m.ID,
+		Content:         m.Content,
+		EditedTimestamp: 0, // updates in service layer
+	}
+
+	resp, restErr := messageService.UpdateMessage(&msg)
+	if restErr != nil {
+		_, _ = s.ChannelMessageSend(m.ChannelID, restErr.GetMessage())
+		return
+	}
+	_, _ = s.ChannelMessageSend(m.ChannelID, resp.Success)
 }
 
 // MessageReactionAdded handles reactions added to a message
-func MessageReactionAdded(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
+func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 
-	msgReaction := domain.MessageReaction{
-		UserID:    m.UserID,
-		MessageID: m.MessageID,
+	reaction := domain.MessageReaction{
+		UserID:    r.UserID,
+		MessageID: r.MessageID,
 		Emoji: domain.Emoji{
-			ID:   m.Emoji.ID,
-			Name: m.Emoji.Name,
+			Name: r.Emoji.Name,
 		},
-		ChannelID: m.ChannelID,
 	}
 
-	b, err := json.Marshal(&msgReaction)
-	if err != nil {
-		fmt.Println(err)
+	restErr := messageService.UpdateReaction(reaction)
+	if restErr != nil {
+		_, _ = s.ChannelMessageSend(r.ChannelID, restErr.GetMessage())
 		return
 	}
-	fmt.Println(string(b))
+	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s added to db", r.Emoji.Name))
 }
 
 // MessageReactionRemoved handles reactions removed
-func MessageReactionRemoved(s *discordgo.Session, m *discordgo.MessageReactionRemove) {
+func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
+
+	// reaction := domain.Emoji{}
+	reaction := domain.MessageReaction{
+		UserID:    r.UserID,
+		MessageID: r.MessageID,
+		Emoji: domain.Emoji{
+			Name: r.Emoji.Name,
+		},
+	}
+
+	restErr := messageService.RemoveReaction(reaction)
+	if restErr != nil {
+		_, _ = s.ChannelMessageSend(r.ChannelID, restErr.GetMessage())
+		return
+	}
+	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s deleted from db", r.Emoji.Name))
 }
 
 // GuildMemberAdded handles new guild members

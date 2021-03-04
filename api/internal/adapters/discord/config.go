@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	// Bot ...
-	Bot   discordBotInterface = &discordSession{}
-	BotID string
+	// Bot is a session
+	Bot discordBotInterface = &discordSession{}
+	// Config is the bot configuration
+	Config config
 )
 
 type discordBotInterface interface {
@@ -27,11 +28,13 @@ type discordSession struct {
 }
 
 type config struct {
-	Token    string            `json:"token"`
-	Owners   []string          `json:"owners"`
-	Prefix   string            `json:"prefix"`
-	Channels map[string]string `json:"channels"`
-	Guild    string            `json:"guild"`
+	Token    string   `json:"token"`
+	BotID    string   `json:"bot_id"`
+	Owners   []string `json:"owners"`
+	Channels []string `json:"channels"`
+	Roles    []string `json:"roles"`
+	Guild    string   `json:"guild"`
+	Prefix   string   `json:"prefix"`
 }
 
 // Init initializes the bot on start up
@@ -42,18 +45,23 @@ func Init() {
 		log.Fatal("Could not read json file: ", err)
 	}
 
-	var conf config
-	err = json.Unmarshal(file, &conf)
+	err = json.Unmarshal(file, &Config)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// set envs
-	os.Setenv("BOT_TOKEN", conf.Token)
+	// os.Setenv("BOT_TOKEN", Config.Token)
+	token := os.Getenv("BOT_TOKEN")
+	if token == "" {
+		fmt.Println("Token value env variable is empty")
+		return
+	}
+	Config.Token = token
 
 	fmt.Println("Initializing bot...")
-	bot, err := discordgo.New("Bot " + conf.Token)
+	bot, err := discordgo.New("Bot " + Config.Token)
 	if err != nil {
 		fmt.Println("error making new bot:", err)
 		return
