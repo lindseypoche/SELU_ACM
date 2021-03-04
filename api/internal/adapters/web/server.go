@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	// blogs
+	// messages/blogs/events
 	messageRepository domain.MessageRepository = storage.NewMongoRepo("mongodb://127.0.0.1:27017", "acm", 5)
 	messageService    domain.MessageService    = domain.NewMessageService(messageRepository)
 	messageHandler    MessageController        = NewMessageController(messageService)
@@ -27,7 +27,7 @@ func getPort() string {
 	if os.Getenv("PORT") != "" {
 		return os.Getenv("PORT")
 	}
-	return "8080"
+	return "8081"
 }
 
 // StartApplication ...

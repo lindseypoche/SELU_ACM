@@ -2,16 +2,20 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/lindseypoche/SELU_ACM/api/internal/domain"
+	"github.com/lindseypoche/SELU_ACM/api/internal/utils/errors/rest"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+// const (
+// lookupByAuthorID = bson.D{{"$lookup", bson.D{{}}}}
+// )
 
 type mongoRepo struct {
 	client   *mongo.Client
@@ -67,10 +71,6 @@ func (repo *mongoRepo) Save(message domain.Message) (*domain.Response, error) {
 // GetByID attempts to get a blog by id from the database
 func (repo *mongoRepo) GetByID(messageID string) (*domain.Message, error) {
 
-	// id, err := primitive.ObjectIDFromHex(messageID)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
 	defer cancel()
 
@@ -87,7 +87,7 @@ func (repo *mongoRepo) GetByID(messageID string) (*domain.Message, error) {
 }
 
 // GetAll gets all blogs in the database
-func (repo *mongoRepo) GetAll() (*[]domain.Message, error) {
+func (repo *mongoRepo) GetAll() (*[]domain.Message, rest.Err) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
 	defer cancel()
@@ -96,7 +96,7 @@ func (repo *mongoRepo) GetAll() (*[]domain.Message, error) {
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
-		return nil, err
+		return nil, rest.NewInternalServerError("error initializing cursor", err)
 	}
 	defer cursor.Close(ctx)
 
@@ -107,23 +107,134 @@ func (repo *mongoRepo) GetAll() (*[]domain.Message, error) {
 		messages = append(messages, message)
 	}
 
+	// check if there are any errors with cursor
+	if err := cursor.Err(); err != nil {
+		restErr := rest.NewInternalServerError("error when searching database", err)
+		return nil, restErr
+	}
+
 	if len(messages) < 1 {
-		return nil, errors.New("no messages found")
+		return nil, rest.NewNotFoundError("can not find any messages in database")
 	}
 	return &messages, nil
 }
 
-// GetByAuthor ...
-func (repo *mongoRepo) GetByAuthor() error {
-	return nil
+// GetByAuthor gets all the posts created by an author
+func (repo *mongoRepo) GetByAuthor(authorID string) (*[]domain.Message, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("messages")
+
+	cursor, err := collection.Find(ctx, bson.M{
+		"author.id": authorID,
+	})
+	defer cursor.Close(ctx)
+
+	messages := []domain.Message{}
+
+	// loop through cursor and store in []messages
+	for cursor.Next(ctx) {
+		var message domain.Message
+		// decode current value in the cursor variable to a message
+		cursor.Decode(&message)
+		messages = append(messages, message)
+	}
+
+	// check if there are any errors with cursor
+	if err := cursor.Err(); err != nil {
+		restErr := rest.NewInternalServerError("error when searching data of an author", err)
+		return nil, restErr
+	}
+
+	if len(messages) < 1 {
+		return nil, rest.NewInternalServerError("no messages found", err)
+	}
+	return &messages, nil
 }
 
 // Update ...
-func (repo *mongoRepo) Update() error {
+func (repo *mongoRepo) Update(message *domain.Message) (*domain.Response, rest.Err) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("messages")
+
+	// filter by
+	filter := bson.M{"id": message.ID}
+	// update fields
+	update := bson.M{
+		"$set": bson.M{
+			"content":         message.Content,
+			"editedtimestamp": message.EditedTimestamp,
+		},
+	}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, rest.NewInternalServerError("error updating message in database", err)
+	}
+
+	// return response ok
+	resp := &domain.Response{Success: "successfully updated message in database"}
+	return resp, nil
+}
+
+// AddReaction adds a reactions to a message document
+func (repo *mongoRepo) AddReaction(r domain.MessageReaction) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("messages")
+
+	filter := bson.M{"id": r.MessageID}
+
+	mr := domain.MessageReaction{
+		UserID: r.UserID,
+		Emoji: domain.Emoji{
+			Name: r.Emoji.Name,
+		},
+	}
+
+	update := bson.M{
+		"$push": bson.M{"reactions": mr},
+	}
+
+	// update db
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return rest.NewInternalServerError("error when inserting emoji into database", err)
+	}
 	return nil
 }
 
 // Delete ...
-func (repo *mongoRepo) Delete() error {
+func (repo *mongoRepo) Delete() rest.Err {
+	return nil
+}
+
+// RemoveReaction removes a reaction.
+func (repo *mongoRepo) DeleteReaction(r domain.MessageReaction) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("messages")
+
+	filter := bson.M{"id": r.MessageID}
+	update := bson.M{
+		"$pull": bson.M{
+			"reactions": bson.M{
+				"user_id":    r.UserID,
+				"emoji.name": r.Emoji.Name,
+			},
+		},
+	}
+
+	// update db
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return rest.NewInternalServerError("error when removing emoji in database", err)
+	}
 	return nil
 }
