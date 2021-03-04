@@ -1,20 +1,19 @@
 {
-    "Token": "ODExNzQ5MDMxNDI3NzAyODA0.YC2uMg.c2c4xD6uVhKBE0jLhNdDLN3WLws",
-    "Owner": [
+    "token": "ODExNzQ5MDMxNDI3NzAyODA0.YC2uMg.xOZja_EmipTH23dviNQINdVeHGk",
+    "bot_id": "811749031427702804",
+    "owners": [
         "150114466401484800",
         "614229479841202176",
         "552882813473390635",
         "387421526137372673"
     ],
-    "ChannelId": [
-        "814352410343899138",
-        "",
-        ""
+    "channels": [
+        "817106423820582972",
+        "817106404842143805"
     ],
-    "Roles": [
-        "", 
-        ""
+    "roles": [
+        "814656414114643969"
     ],
-    "Guild": "780008059916517386",
-    "Prefix": "!"
+    "guild": "780008059916517386",
+    "prefix": "!"
 }

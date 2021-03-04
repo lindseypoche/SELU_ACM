@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -17,30 +18,6 @@ var (
 const (
 	discordEpoch int = 1420070400000
 )
-
-func validateAuthorAndRole(authorID string, botID string, roles []string) bool {
-	if authorID == botID {
-		return false
-	}
-	if roles == nil {
-		return false
-	}
-
-	return true
-
-	// for i, role := range roles {
-	// 	fmt.Printf("%d role: %s\n", i, role)
-	// 	// @ACM role id
-	// 	if role == "814656414114643969" {
-	// 		return true
-	// 	}
-	// }
-	// return false
-}
-
-// func validateChannel() {
-
-// }
 
 func getAttachment(attachments []*discordgo.MessageAttachment) *domain.MessageAttachment {
 	if len(attachments) > 0 {
@@ -68,9 +45,10 @@ func snowflakeToUnix(snowflake string) int {
 // MessageCreated handles messages created (WORKING)
 func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	if ok := validateAuthorAndRole(m.Author.ID, s.State.User.ID, m.Member.Roles); !ok {
+	if ok := Validate(s, m.Message); !ok {
 		return
 	}
+	// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your message was not posted to the web")
 
 	msg := domain.Message{
 		ID:           m.ID,
@@ -103,7 +81,10 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 // MessageUpdated handles messages updated (WORKING)
 func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
-	validateAuthorAndRole(m.Author.ID, s.State.User.ID, m.Member.Roles)
+	if ok := Validate(s, m.Message); !ok {
+		// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your edit was not updated on the web")
+		return
+	}
 
 	msg := domain.Message{
 		ID:              m.ID,
@@ -135,7 +116,7 @@ func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd)
 		_, _ = s.ChannelMessageSend(r.ChannelID, restErr.GetMessage())
 		return
 	}
-	_, _ = s.ChannelMessageSend(r.ChannelID, "emoji added to db")
+	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s added to db", r.Emoji.Name))
 }
 
 // MessageReactionRemoved handles reactions removed
@@ -155,7 +136,7 @@ func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRe
 		_, _ = s.ChannelMessageSend(r.ChannelID, restErr.GetMessage())
 		return
 	}
-	_, _ = s.ChannelMessageSend(r.ChannelID, "emoji deleted from db :)")
+	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s deleted from db", r.Emoji.Name))
 }
 
 // GuildMemberAdded handles new guild members
