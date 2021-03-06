@@ -86,17 +86,20 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		return
 	}
 
-	msg := domain.Message{
+	// editedTimestamp := date_utils.GetNowUnix()
+	// fmt.Println(editedTimestamp)
+	msg := &domain.Message{
 		ID:              m.Message.ID,
 		Content:         m.Message.Content,
-		EditedTimestamp: 0, // updates in service layer
+		EditedTimestamp: 0,
 	}
 
-	resp, restErr := messageService.UpdateMessage(&msg)
+	resp, restErr := messageService.UpdateMessage(msg)
 	if restErr != nil {
 		_, _ = s.ChannelMessageSend(m.Message.ChannelID, restErr.GetMessage())
 		return
 	}
+	_, _ = s.ChannelMessageSend(m.Message.ChannelID, fmt.Sprintf("edited_timestamp: %d", msg.EditedTimestamp))
 	_, _ = s.ChannelMessageSend(m.Message.ChannelID, resp.Success)
 }
 

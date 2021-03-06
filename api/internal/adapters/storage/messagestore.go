@@ -153,7 +153,7 @@ func (repo *mongoRepo) GetByAuthor(authorID string) (*[]domain.Message, rest.Err
 	return &messages, nil
 }
 
-// Update ...
+// Update updates a message
 func (repo *mongoRepo) Update(message *domain.Message) (*domain.Response, rest.Err) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
@@ -166,8 +166,8 @@ func (repo *mongoRepo) Update(message *domain.Message) (*domain.Response, rest.E
 	// update fields
 	update := bson.M{
 		"$set": bson.M{
-			"content":         message.Content,
-			"editedtimestamp": message.EditedTimestamp,
+			"content":          message.Content,
+			"edited_timestamp": message.EditedTimestamp,
 		},
 	}
 
