@@ -102,17 +102,8 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
 // MessageDeleted handles message deleted reactions
 func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
-	// if ok := Validate(s, m.BeforeDelete); !ok {
-	// 	// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your edit was not updated on the web")
-	// 	return
-	// }
-
-	// if m.Author.ID == s.State.User.ID || m.Author.Bot {
-	// 	return
-	// }
 
 	id := m.ID
-	_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("message %s", id))
 	restErr := messageService.DeleteMessage(id)
 	if restErr != nil {
 		_, _ = s.ChannelMessageSend(m.ChannelID, restErr.GetMessage())
