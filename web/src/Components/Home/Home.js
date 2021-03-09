@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 import "./Home.css";
-import HomeCaro from "./HomeCaro.js";
+
 import ParallaxContainer from "./ParallaxContainer";
 import discord from "../image/Discord.png";
 import VideoPlayback from '../video/VideoPlayback.js'
