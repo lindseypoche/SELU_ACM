@@ -15,6 +15,7 @@ type Context interface {
 }
 
 var (
+	// ginDispatcher = gin.Default() // gin.Engine
 	ginDispatcher = gin.Default() // gin.Engine
 )
 
@@ -40,5 +41,4 @@ func (r *ginRouter) POST(uri string, f func(ctx *gin.Context)) {
 func (r *ginRouter) SERVE(port string) {
 	fmt.Printf("Gin HTTP server running on port %v", port)
 	http.ListenAndServe(port, ginDispatcher)
-
 }

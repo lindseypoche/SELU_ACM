@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	// Bot ...
-	Bot   discordBotInterface = &discordSession{}
-	BotID string
+	// Bot is a session
+	Bot discordBotInterface = &discordSession{}
+	// Config is the bot configuration
+	Config config
 )
 
 type discordBotInterface interface {
@@ -27,32 +28,40 @@ type discordSession struct {
 }
 
 type config struct {
-	Token     string `json:"token"`
-	Prefix    string `json:"prefix"`
-	ChannelID string `json:"channel_id"`
-	Guild     string `json:"guild"`
+	Token    string   `json:"token"`
+	BotID    string   `json:"bot_id"`
+	Owners   []string `json:"owners"`
+	Channels []string `json:"channels"`
+	Roles    []string `json:"roles"`
+	Guild    string   `json:"guild"`
+	Prefix   string   `json:"prefix"`
 }
 
 // Init initializes the bot on start up
 func Init() {
 
-	file, err := ioutil.ReadFile("../../internal/clients/discord/config.json")
+	file, err := ioutil.ReadFile("../../internal/adapters/discord/config.json")
 	if err != nil {
 		log.Fatal("Could not read json file: ", err)
 	}
 
-	var conf config
-	err = json.Unmarshal(file, &conf)
+	err = json.Unmarshal(file, &Config)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// set envs
-	os.Setenv("BOT_TOKEN", conf.Token)
+	// os.Setenv("BOT_TOKEN", Config.Token)
+	token := os.Getenv("BOT_TOKEN")
+	if token == "" {
+		fmt.Println("Token value env variable is empty")
+		return
+	}
+	Config.Token = token
 
 	fmt.Println("Initializing bot...")
-	bot, err := discordgo.New("Bot " + conf.Token)
+	bot, err := discordgo.New("Bot " + Config.Token)
 	if err != nil {
 		fmt.Println("error making new bot:", err)
 		return
@@ -60,8 +69,16 @@ func Init() {
 
 	Bot.setBot(bot)
 
-	// Register the messageCreate func as a callback for MessageCreate events.
-	bot.AddHandler(messageCreate)
+	// Register handlers
+	bot.AddHandler(MessageCreated)
+	bot.AddHandler(MessageDeleted)
+	bot.AddHandler(MessageUpdated)
+	bot.AddHandler(MessageReactionAdded)
+	bot.AddHandler(MessageReactionRemoved)
+	bot.AddHandler(GuildMemberAdded)
+	bot.AddHandler(GuildMemberRemoved)
+	bot.AddHandler(GuildMemberUpdated)
+	bot.AddHandler(UserUpdated)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = bot.Open()
@@ -81,28 +98,4 @@ func Init() {
 
 func (s *discordSession) setBot(session *discordgo.Session) {
 	s.Bot = session
-}
-
-func GetSession() discordBotInterface {
-	return Bot
-}
-
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the authenticated bot has access to.
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-	// Ignore all messages created by the bot itself
-	// This isn't required in this specific example but it's a good practice.
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
-
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
 }

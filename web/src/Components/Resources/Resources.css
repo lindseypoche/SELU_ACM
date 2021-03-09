@@ -1,0 +1,19 @@
+.resourcesPage{
+    background-color: rgba(230, 230, 230, 0.89);
+    display: block;
+    width:93%;
+    height:auto;
+    border-radius: .75em;
+    margin:auto;
+    z-index: 100;
+    margin-top:-5em;
+    position: relative;
+    padding: 3em;
+    top: 120px;
+} 
+
+.image{
+    height: auto;
+    width:70%;
+    
+}

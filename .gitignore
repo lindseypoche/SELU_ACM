@@ -2,6 +2,7 @@
 **/config.json
 docker-compose.yml
 **/Dockerfile
+*.drawio
 
 # Compiled source #
 ###################

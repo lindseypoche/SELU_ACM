@@ -42,12 +42,14 @@ const NavigationBar = (props) => {
             <NavItem>
               <NavLink className="acm" tag={Link} to="/events">Events</NavLink>
             </NavItem>
-
+            <NavItem>
+              <NavLink className="acm" tag={Link} to="/resources">Resources</NavLink>
+            </NavItem>
             <NavItem>
               <NavLink className="acm" tag={Link} to="/calendar">Calendar</NavLink>
             </NavItem>
           </Nav>
-          <Nav className="rightSide" navbar>
+          {/* <Nav className="rightSide" navbar>
           <UncontrolledDropdown nav inNavbar>
               <DropdownToggle className="acm" nav caret>
                 Admin
@@ -71,7 +73,7 @@ const NavigationBar = (props) => {
               <NavItem>
                 <NavLink className="acm" tag={Link} to="/login">Login</NavLink>
               </NavItem>
-            </Nav>
+            </Nav> */}
         </Collapse>
       </Navbar>
     </div>
