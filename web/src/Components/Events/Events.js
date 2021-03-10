@@ -11,7 +11,7 @@ function Events(props) {
 
         axios
         // .get(`http://localhost:8080/blogs/${props.match.params.id}`)
-            .get(`http://localhost:8080/blogs`)
+            .get('http://localhost:3000/blogs')
             .then((result) => {
                 setSomeHook(result.data);
             })

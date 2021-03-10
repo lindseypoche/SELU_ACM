@@ -19,13 +19,45 @@
 
 .box {
   margin: 20px;
+  width: 10rem;
+  height: 800px;
+  background-color: transparent;
+  border: 2px;
+  border-color: black;
+  border-radius: 2.5%;
 }
 
 .grid {
-  min-height: 100%;
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+}
+
+.cTitle{
+  align-self: top;
+}
+
+.cText{
+  
+  
+}
+
+.cButton{
+
+}
+
+.cImage{
+  height: 50%;
+  object-fit: contain;
+}
+
+.cBody{
+  height: 100%;
+  overflow: auto;
+  background-color: lightgrey;
+  border-bottom-left-radius: 2.5%;
+  border-bottom-right-radius: 2.5%;
 }
 
 .grid > div {

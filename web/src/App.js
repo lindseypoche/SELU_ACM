@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './Components/Home/Home.js';
 import Login from './Components/LogIn/Login.js';
 import Calendar from './Components/Calendar/Calendar.js';
-import Officers from './Components/Officers/Officers.js'
+import Officers from './Components/Officers/Officers.js';
 import Events from './Components/Events/Events';
 import Resources from './Components/Resources/Resources';
 import Footer from './Components/Footer/Footer.js';
