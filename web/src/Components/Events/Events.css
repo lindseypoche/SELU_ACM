@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
 
+/* .card {
+    height: 300px !important;
+    width: auto;
+    -webkit-flex-direction: row; 
+    flex-direction: row;
+} */
+
 .discord-avatar {
     height: 50px;
     width: 50px;
