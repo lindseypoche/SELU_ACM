@@ -29,7 +29,7 @@ const EventsPage = () => {
         return (
             <>
               {/* <Parallax key={eventsHook[0].id} blur={3} bgImage={featuredHook.message.attachments.url} bgImageAlt="never trust a bunny" strength={200}> */}
-              <Parallax key={eventsHook[0].id} blur={3} bgImage={eventsHook[0].attachments.url} bgImageAlt="never trust a bunny" strength={200} >
+              <Parallax key={eventsHook[0].id} blur={3} bgImage={eventsHook[0].message.attachments.url} bgImageAlt="never trust a bunny" strength={200} >
                   <div style={
                       {
                           height: '700px',
