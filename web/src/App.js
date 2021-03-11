@@ -27,7 +27,7 @@ function App() {
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />
         </Switch>
-        <Footer/>
+        
         {/* Render components in app*/}
       </BrowserRouter>
 
