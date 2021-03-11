@@ -1,17 +1,16 @@
-.calendarPage {
+.paraCont {
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
     width: 93%;
     height: 80%;
     border-radius: .75em;
     margin: auto;
-    z-index: 100;
-    margin-top: -5em;
+    z-index: 99;
     left: 3.5vw;
     position: absolute;
     box-shadow: 0px 0px 3px #4444;
     padding: 3em;
-    top: 20%;
+    top: 15%;
 }
 
 body {
@@ -26,42 +25,28 @@ body {
 
 #app {
     height: 100%;
-    box-sizing: padding-box;
+    box-sizing: border-box;
 }
 
 .dx-scheduler {
     height: 100%;
-    box-sizing: padding-box;
 }
 
 .dx-scheduler.dx-scheduler-readonly.dx-widget.dx-visibility-change-handler {
-    height: auto !important;
-    box-sizing: padding-box !important;
+    box-sizing: border-box;
+    padding-bottom: 56px;
+    height: 100%;
+    width: inherit;
+    display: block;
+    
 }
 
-.dx-scheduler-work-space-odd-cells.dx-scheduler-work-space.dx-scheduler-work-space-month.dx-widget.dx-visibility-change-handler {
-    height: 100% !important;
-    display: flex;
-    box-sizing: padding-box !important;
-}
-
-.dx-widget,
-.dx-widget *,
-.dx-widget ::after,
-.dx-widget ::before,
-.dx-widget::after,
-.dx-widget::before {
-    box-sizing: padding-box !important;
-}
-
-.dx-scheduler-work-space {
-    box-sizing: padding-box;
-}
-
-.long-title h3 {
+.long-title, .h3 {
     font-family: 'Segoe UI Light', 'Helvetica Neue Light', 'Segoe UI', 'Helvetica Neue', 'Trebuchet MS', Verdana;
     font-weight: 200;
     font-size: 28px;
     text-align: center;
-    margin-bottom: 20px;
+    vertical-align: middle;
+    padding-bottom: 15px;
+    padding-top: 15px;
 }

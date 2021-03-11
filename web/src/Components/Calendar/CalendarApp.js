@@ -48,7 +48,7 @@ const views = ['day', 'workWeek', 'month'];
 class CalendarApp extends React.Component {
     render() {
         return (
-            <div className="calendarPage">
+            <div className="paraCont">
                 <head>
                     <title>DevExtreme Demo</title>
                     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -71,7 +71,6 @@ class CalendarApp extends React.Component {
                                     views={views}
                                     defaultCurrentView="month"
                                     defaultCurrentDate={currentDate}
-                                    height={500}
                                     startDayHour={7}
                                     editing={false}
                                     showAllDayPanel={false}
