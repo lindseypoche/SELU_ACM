@@ -59,8 +59,8 @@ class CalendarApp extends React.Component {
 
                 </head>
 
-                <body class="dx-viewport">
-                    <div class="demo-container">
+                <body className="dx-viewport">
+                    <div className="demo-container">
                         <div id="app">
                             <React.Fragment>
                                 <div className="long-title">
