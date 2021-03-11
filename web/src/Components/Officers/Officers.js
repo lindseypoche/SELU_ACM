@@ -9,8 +9,7 @@ class Officers extends Component {
             <div className="officersPage">
                 <h1>Officers</h1>
                 <div className="eventContainer">
-                    <OfficerCard/>
-                                       
+                    <OfficerCard/>                                       
                 </div>
             </div>
         )
