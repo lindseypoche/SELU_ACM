@@ -6,8 +6,8 @@ import Events from "../../Components/Events/Events.js"
 
 const EventsPage = () => {
 
-        let eventsRoute = "http://localhost:8080/events";
-        let featuredEventRoute = "http://localhost:8080/featured/817106404842143805";
+        const eventsRoute = "http://localhost:8080/events";
+        const featuredEventRoute = "http://localhost:8080/featured/817106404842143805";
         // const eventsReq = axios.get(events);
         // const featuredReq = axios.get(featuredEvent);
       
@@ -28,7 +28,8 @@ const EventsPage = () => {
 
         return (
             <>
-              <Parallax key={featuredHook.channel_id} blur={3} bgImage={featuredHook.message.attachments.url} bgImageAlt="never trust a bunny" strength={200}>
+              {/* <Parallax key={eventsHook[0].id} blur={3} bgImage={featuredHook.message.attachments.url} bgImageAlt="never trust a bunny" strength={200}> */}
+              <Parallax key={eventsHook[0].id} blur={3} bgImage={eventsHook[0].attachments.url} bgImageAlt="never trust a bunny" strength={200} >
                   <div style={
                       {
                           height: '700px',
@@ -51,14 +52,15 @@ const EventsPage = () => {
                             {
                             }
                         }>
-                            {featuredHook.message.content}
+                            {eventsHook[0].content.substring(0, 250)}
                         </p>
                     </div>
                   </div>
-              </Parallax>
+              </Parallax> 
+
                 {/* <Featured key={featuredHook.channel_id} featured={featuredHook} /> */}
 
-              <Events events={eventsHook} />
+              <Events events={eventsHook.slice(1)} />
             </>
         )
 }
