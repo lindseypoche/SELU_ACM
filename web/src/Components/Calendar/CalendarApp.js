@@ -71,7 +71,6 @@ class CalendarApp extends React.Component {
                                     views={views}
                                     defaultCurrentView="month"
                                     defaultCurrentDate={currentDate}
-                                    height={500}
                                     startDayHour={7}
                                     editing={false}
                                     showAllDayPanel={false}
