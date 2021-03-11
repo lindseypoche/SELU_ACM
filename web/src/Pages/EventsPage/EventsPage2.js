@@ -21,11 +21,11 @@ export class EventsPage2 extends React.Component {
 
   componentDidMount() {
 
-    // const acmFeaturedChannel = "817106404842143805"
-    const cakeFeaturedChannel = "814350227544604692"
+    const acmFeaturedChannel = "817106404842143805" // events channel
+    // const cakeFeaturedChannel = "814350227544604692"
 
     // fetch Featured data 
-    axios.get("http://localhost:8080/featured/" + cakeFeaturedChannel).then((response) => {
+    axios.get("http://localhost:8080/featured/" + acmFeaturedChannel).then((response) => {
       this.setState({ 
         featured: response.data, 
         message: response.data.message,
