@@ -4,9 +4,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { Route, Switch } from 'react-router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './Components/Home/Home.js';
-import Calendar from './Components/Calendar/Calendar.js';
-import Officers from './Components/Officers/Officers.js'
 import EventsPage from './Pages/EventsPage/EventsPage.js';
+import Calendar from './Components/Calendar/CalendarApp.js';
+import Officers from './Components/Officers/Officers.js';
 import Resources from './Components/Resources/Resources';
 import Footer from './Components/Footer/Footer.js';
 
