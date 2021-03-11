@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import acmlogo from '../image/association-for-computing-machinery-logo.png'
+import acmlogo from '../image/association-for-computing-machinery-logo.png';
 import {
   Collapse,
   Navbar,

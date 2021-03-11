@@ -2,15 +2,12 @@
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
     width:93%;
-    height:30em;
+    height:auto;
     border-radius: .75em;
     margin:auto;
     z-index: 100;
     margin-top:-5em;
-    left:3.5vw;
-    position: absolute;
-    box-shadow: 0px 0px 3px #4444;
+    position: relative;
     padding: 3em;
-       
-    top: 400px
+    top: 120px;
 }
