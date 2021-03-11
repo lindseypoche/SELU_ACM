@@ -1,39 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
-import "./Events.css";
-import BlogCard from "../Card2/BlogCard.js";
-import axios from "axios";
+import slugo from "./slugo.png"
 
-function Events(props) {
-    // var Urlid = props.match.params.id;
-    const [someHook, setSomeHook] = useState([]);
-    useEffect(() => {
+import CardColumns from 'react-bootstrap/CardColumns';
+import Card from 'react-bootstrap/Card';
 
-        axios
-        // .get(`http://localhost:8080/blogs/${props.match.params.id}`)
-            .get(`http://localhost:8080/blogs`)
-            .then((result) => {
-                setSomeHook(result.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, [])
-
-    var cards = [];
-
-    for (var i in someHook){
-        console.log(someHook)
-        cards.push(<BlogCard 
-            dataobj={someHook[i]}
-        />)
-    }
+const Events = ({ events }) => {
 
     return (
-    <div className='eventContainer'>
-         { cards } 
-    </div>
-    );
+        <CardColumns>
+        {
+          (events.length > 0 ? (
+          events.map((event) => (
+          <Card key={event.id} className="p-3">
+              { event.attachments != null ? 
+                    (
+                        <Card.Img variant="top" src={event.attachments.url} />
+                    ) : (
+                        <Card.Img variant="top" src={slugo} />
+                    )
+              }
+            <Card.Body>
+                <Card.Title>{event.content.substring(0, 15)}</Card.Title>
+                <Card.Text>
+                    {event.content.substring(0, 200)}
+                </Card.Text>
+              </Card.Body>
+              <Card.Footer>
+                <img thumbnail style={{marginRight: "10px", height: "50px", width: "50px", borderRadius: "50%", textAlign: "left"}} className='discord-avatar' src={event.author.avatar.image_url} />
+                <small className="text-muted">edited at {event.timestamp}</small>
+              </Card.Footer>
+            </Card>
+          ))
+            ) : (
+            'No events to show'
+            )
+          )
+        };
+        </CardColumns>
+    )
 }
 
 export default Events;

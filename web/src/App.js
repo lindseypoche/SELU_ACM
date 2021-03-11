@@ -7,10 +7,8 @@ import Home from './Components/Home/Home.js';
 import Login from './Components/LogIn/Login.js';
 import Calendar from './Components/Calendar/Calendar.js';
 import Officers from './Components/Officers/Officers.js'
-import Events from './Components/Events/Events';
+import EventsPage from './Pages/EventsPage/EventsPage.js';
 import Resources from './Components/Resources/Resources';
-
-
 
 
 function App() {
@@ -21,7 +19,7 @@ function App() {
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/login' component={Login} />
-          <Route exact path='/events' component={Events} />
+          <Route exact path='/events' component={EventsPage} />
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />

@@ -1,24 +1,14 @@
-.eventsPage{
-    background-color: rgba(230, 230, 230, 0.89);
-    display: block;
-    width:93%;
-    height:30em;
-    border-radius: .75em;
-    margin:auto;
-    z-index: 100;
-    margin-top:-5em;
-    left:3.5vw;
-    position: absolute;
-    box-shadow: 0px 0px 3px #4444;
-    padding: 3em;
-       
-    top: 400px
-} 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
 
-.eventContainer{
-    display: inline-block;
-    text-align: center;
-    /* flex-direction: row; */
-    column-gap: 2%;
+/* .card {
+    height: 300px !important;
+    width: auto;
+    -webkit-flex-direction: row; 
+    flex-direction: row;
+} */
+
+.discord-avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
 }
-
