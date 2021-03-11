@@ -5,7 +5,7 @@ import { Route, Switch } from 'react-router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './Components/Home/Home.js';
 import Login from './Components/LogIn/Login.js';
-import Calendar from './Components/Calendar/Calendar.js';
+import Calendar from './Components/Calendar/CalendarApp.js';
 import Officers from './Components/Officers/Officers.js';
 import Events from './Components/Events/Events';
 import Resources from './Components/Resources/Resources';

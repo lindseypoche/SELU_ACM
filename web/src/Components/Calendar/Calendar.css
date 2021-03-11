@@ -2,12 +2,21 @@
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
     width:93%;
-    height:auto;
     border-radius: .75em;
     margin:auto;
     z-index: 100;
     margin-top:-5em;
-    position: relative;
+    left:3.5vw;
+    position: absolute;
+    box-shadow: 0px 0px 3px #4444;
     padding: 3em;
-    top: 120px;
+    top: 20%;
+} 
+
+.long-title h3 {
+    font-family: 'Segoe UI Light', 'Helvetica Neue Light', 'Segoe UI', 'Helvetica Neue', 'Trebuchet MS', Verdana;
+    font-weight: 200;
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 20px;
 }
