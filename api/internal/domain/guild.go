@@ -23,13 +23,13 @@ type Guild struct {
 
 // A Channel holds all data related to an individual Discord channel.
 type Channel struct {
-	ID            string     `json:"id"`
-	GuildID       string     `json:"guild_id"`
-	Name          string     `json:"name"`
-	Topic         string     `json:"topic"`
-	Messages      []*Message `json:"-"`
-	OwnerID       string     `json:"owner_id"`
-	ApplicationID string     `json:"application_id"`
+	ID        string     `json:"id"`
+	GuildID   string     `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
+	Name      string     `json:"name,omitempty" bson:"name,omitempty"`
+	Topic     string     `json:"topic,omitempty" bson:"topic,omitempty"`
+	Messages  []*Message `json:"-,omitempty" bson:"-,omitempty"`
+	LatestPin *Pin       `json:"latest_pin,omitempty" bson:"latest_pin,omitempty"`
+	// Pins      []*Pin     `json:"pins,omitempty" bson:"pins,omitempty"`
 }
 
 // A Message stores all data related to a specific Discord message.
@@ -45,8 +45,8 @@ type Message struct {
 	Attachment      *MessageAttachment `json:"attachments" bson:"attachments,omitempty"`
 	Embeds          *MessageEmbed      `json:"embeds,omitempty" bson:"embeds,omitemtpy"`
 	Mentions        []*User            `json:"mentions,omitempty" bson:"mentions,omitempty"`
-
-	Reactions []MessageReaction `json:"reactions,omitempty" bson:"reactions,omitempty"`
+	Pinned          bool               `json:"pinned,omitempty" bson:"pinned,omitempty"`
+	Reactions       []MessageReaction  `json:"reactions,omitempty" bson:"reactions,omitempty"`
 }
 
 // Author is a pointer to a User
@@ -151,6 +151,13 @@ type MessageEmbedAuthor struct {
 type Role struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+// Pin stores data about pinned messages in a channel
+type Pin struct {
+	Message   *Message `json:"message" bson:"message"`
+	PinnedAt  int      `json:"pinned_at" bson:"pinned_at"`
+	ChannelID string   `json:"channel_id,omitempty" bson:"channel_id,omitempty"`
 }
 
 // Timestamp stores a timestamp, as sent by the Discord API.

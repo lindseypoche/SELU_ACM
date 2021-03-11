@@ -13,7 +13,8 @@ import (
 type MessageController interface {
 	Get(*gin.Context)
 	GetAll(*gin.Context)
-	GetByAuthor(ctx *gin.Context)
+	GetByAuthor(*gin.Context)
+	GetFeatured(*gin.Context)
 }
 
 type messageController struct {
@@ -33,7 +34,7 @@ func (c *messageController) Get(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
 	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
 
-	messageID := ctx.Param("blog_id")
+	messageID := ctx.Param("event_id")
 	if messageID == "" {
 		ctx.JSON(http.StatusBadRequest, errors.New("no message id found"))
 		return
@@ -80,4 +81,22 @@ func (c *messageController) GetByAuthor(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, messages)
+}
+
+func (c *messageController) GetFeatured(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
+	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+
+	channel := ctx.Param("channel_id")
+	if channel == "" {
+		ctx.JSON(http.StatusBadRequest, errors.New("no channel id found"))
+		return
+	}
+
+	featured, getErr := c.messageService.GetFeatured(channel)
+	if getErr != nil {
+		ctx.JSON(http.StatusNotFound, getErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, featured)
 }

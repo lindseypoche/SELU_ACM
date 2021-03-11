@@ -12,4 +12,6 @@ type MessageRepository interface {
 	AddReaction(MessageReaction) rest.Err
 	Delete(string) rest.Err
 	DeleteReaction(MessageReaction) rest.Err
+	InsertLatestPinned(*Pin) rest.Err
+	GetLatestPinned(string) (*Pin, rest.Err)
 }

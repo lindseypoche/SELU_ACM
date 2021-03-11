@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/lindseypoche/SELU_ACM/api/internal/domain"
@@ -23,7 +24,26 @@ type mongoRepo struct {
 	timeout  time.Duration
 }
 
+// newMongoAtlasClient connects to the remote mongo atlas cluster
+func newMongoAtlasClient() (*mongo.Client, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://QuantaCake01:Mo26oDB.Co3!@cluster0.mis3d.mongodb.net/acm?retryWrites=true&w=majority"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+	// defer client.Disconnect(ctx)
+}
+
+// newMongoClient connects to your local mongo client
 func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mongoTimeout)*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURL))
@@ -249,4 +269,68 @@ func (repo *mongoRepo) DeleteReaction(r domain.MessageReaction) rest.Err {
 		return rest.NewInternalServerError("error when removing emoji in database", err)
 	}
 	return nil
+}
+
+// InsertLatestPinned inserts a pin into the LatestPin field
+// of a channel
+func (repo *mongoRepo) InsertLatestPinned(pin *domain.Pin) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("channels")
+
+	filter := bson.M{"id": pin.ChannelID}
+	// if id doesn't exist, create new channel document
+	count, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return rest.NewInternalServerError("error when counting number of docuemnts in database", err)
+	}
+
+	// update existing channel document
+	if count > 0 {
+		update := bson.M{
+			"$push": bson.M{
+				"latest_pin": bson.M{
+					"message":    pin.Message,
+					"pinned_at":  pin.PinnedAt,
+					"channel_id": pin.ChannelID,
+				},
+			},
+		}
+
+		_, err = collection.UpdateOne(ctx, filter, update)
+		if err != nil {
+			return rest.NewInternalServerError("error when updating channel in database", err)
+		}
+	}
+
+	// create new channel document
+	channel := &domain.Channel{
+		ID:        pin.ChannelID,
+		LatestPin: pin,
+	}
+
+	// update db
+	_, err = collection.InsertOne(ctx, channel)
+	if err != nil {
+		return rest.NewInternalServerError("error when inserting a new channel into database", err)
+	}
+	return nil
+}
+
+// GetLatestPinned gets the LatestPin from a channel
+func (repo *mongoRepo) GetLatestPinned(channelID string) (*domain.Pin, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
+	defer cancel()
+
+	collection := repo.client.Database("acm").Collection("channels")
+
+	channel := &domain.Channel{}
+	result := collection.FindOne(ctx, bson.M{"id": channelID})
+
+	err := result.Decode(channel)
+	if err != nil {
+		return nil, rest.NewInternalServerError("error when decoding data into object", err)
+	}
+	return channel.LatestPin, nil
 }

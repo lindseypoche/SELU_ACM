@@ -78,6 +78,7 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	_, _ = s.ChannelMessageSend(m.ChannelID, resp.Success)
 }
 
+// should be changed to MessageEdited
 // MessageUpdated handles messages updated (WORKING)
 func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
@@ -88,6 +89,40 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
 	// editedTimestamp := date_utils.GetNowUnix()
 	// fmt.Println(editedTimestamp)
+
+	fmt.Println("m.Pinned: ", m.Pinned)
+	if m.Pinned == true {
+		// update LatestPin in channel
+		pin := &domain.Pin{
+			ChannelID: m.ChannelID,
+			Message: &domain.Message{
+				ID:         m.ID,
+				ChannelID:  m.ChannelID,
+				Content:    m.Content,
+				Pinned:     m.Pinned,
+				Attachment: getAttachment(m.Attachments),
+				Author: &domain.User{
+					ID:            m.Author.ID,
+					Username:      m.Author.Username,
+					Discriminator: m.Author.Discriminator,
+					Avatar: domain.Avatar{
+						ID:       m.Author.Avatar,
+						ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
+					},
+					Email: m.Author.Email,
+				},
+			},
+			PinnedAt: 0,
+		}
+		err := messageService.UpdateLatestPin(pin)
+		if err != nil {
+			_, _ = s.ChannelMessageSend(m.Message.ChannelID, err.GetMessage())
+			return
+		}
+		_, _ = s.ChannelMessageSend(m.Message.ChannelID, fmt.Sprintf("channel_id: %s, did_pin: %v", pin.ChannelID, m.Pinned))
+		return
+	}
+
 	msg := &domain.Message{
 		ID:              m.Message.ID,
 		Content:         m.Message.Content,
@@ -154,6 +189,11 @@ func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRe
 	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s deleted from db", r.Emoji.Name))
 }
 
+// ChannelPinsUpdated : may do something with pins
+func ChannelPinsUpdated(s *discordgo.Session, m *discordgo.ChannelPinsUpdate) {
+
+}
+
 // GuildMemberAdded handles new guild members
 func GuildMemberAdded(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 }
@@ -172,8 +212,4 @@ func GuildRoleUpdated(s *discordgo.Session, m *discordgo.GuildRoleUpdate) {
 
 // UserUpdated handles updated user info
 func UserUpdated(s *discordgo.Session, m *discordgo.UserUpdate) {
-}
-
-// ChannelPinsUpdated : may do something with pins
-func ChannelPinsUpdated(s *discordgo.Session, m *discordgo.UserUpdate) {
 }

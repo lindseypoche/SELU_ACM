@@ -15,6 +15,8 @@ type MessageService interface {
 	UpdateReaction(MessageReaction) rest.Err
 	DeleteMessage(string) rest.Err
 	RemoveReaction(MessageReaction) rest.Err
+	GetFeatured(string) (*Pin, rest.Err)
+	UpdateLatestPin(*Pin) rest.Err
 }
 
 type messageService struct {
@@ -105,5 +107,27 @@ func (s *messageService) RemoveReaction(r MessageReaction) rest.Err {
 		return err
 	}
 
+	return nil
+}
+
+// GetFeatured
+func (s *messageService) GetFeatured(channelID string) (*Pin, rest.Err) {
+
+	result, err := s.messageRepo.GetLatestPinned(channelID)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *messageService) UpdateLatestPin(pin *Pin) rest.Err {
+	// update pin timestamp
+	t := date_utils.GetNowUnix()
+	pin.PinnedAt = t
+
+	err := s.messageRepo.InsertLatestPinned(pin)
+	if err != nil {
+		return err
+	}
 	return nil
 }
