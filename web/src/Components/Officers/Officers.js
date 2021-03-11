@@ -5,11 +5,13 @@ import OfficerCard from '../OfficerCard/OfficerCard.js';
 
 class Officers extends Component {
     render() {
-        return(
+        return (
             <div className="officersPage">
-                <h1>Officers</h1>
-                <div className="eventContainer">
-                    <OfficerCard/>                                       
+                <div className="officersPara">
+                    <h1>Officers</h1>
+                    <div className="officersContainer">
+                        <OfficerCard />
+                    </div>
                 </div>
             </div>
         )

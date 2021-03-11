@@ -1,17 +1,16 @@
-.calendarPage {
+.paraCont {
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
     width: 93%;
     height: 80%;
     border-radius: .75em;
     margin: auto;
-    z-index: 100;
-    margin-top: -5em;
+    z-index: 99;
     left: 3.5vw;
     position: absolute;
     box-shadow: 0px 0px 3px #4444;
     padding: 3em;
-    top: 20%;
+    top: 15%;
 }
 
 body {

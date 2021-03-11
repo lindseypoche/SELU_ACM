@@ -1,14 +1,17 @@
-.resourcesPage{
+.resourcesPara{
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
-    width:93%;
+    width:80%;
     height:auto;
     border-radius: .75em;
     margin:auto;
     position: relative;
     padding: 3em;
-    top: 120px;
 } 
+
+.resourcesPage{
+    padding-top: 8%;
+}
 
 .image{
     height: auto;
