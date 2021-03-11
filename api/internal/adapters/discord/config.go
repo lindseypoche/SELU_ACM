@@ -28,19 +28,19 @@ type discordSession struct {
 }
 
 type config struct {
-	Token    string   `json:"token"`
-	BotID    string   `json:"bot_id"`
-	Owners   []string `json:"owners"`
-	Channels []string `json:"channels"`
-	Roles    []string `json:"roles"`
-	Guild    string   `json:"guild"`
-	Prefix   string   `json:"prefix"`
+	Token    string            `json:"token"`
+	BotID    string            `json:"bot_id"`
+	Owners   []string          `json:"owners"`
+	Channels map[string]string `json:"channels"`
+	Roles    []string          `json:"roles"`
+	Guild    string            `json:"guild"`
+	Prefix   string            `json:"prefix"`
 }
 
 // Init initializes the bot on start up
 func Init() {
 
-	file, err := ioutil.ReadFile("../../internal/adapters/discord/config.json")
+	file, err := ioutil.ReadFile("../../internal/adapters/discord/cake.json")
 	if err != nil {
 		log.Fatal("Could not read json file: ", err)
 	}

@@ -1,25 +1,14 @@
 import './Featured.css'
 
-const Featured = ({ featured }) => {
+const Featured = ({ message, attachment }) => {
  
     return (
         <>
         <div className='featured'>
-              { featured.message.attachments != null ? 
-                    (
-                        <>
-                        <p>{featured.channel_id}</p>
-                        <img src={featured.message.attachments.url} />
-                        <div className='content'>
-                            <p>{featured.message.content}</p>
-                        </div>
-                        </>
-                    ) : (
-                        <p>
-                            No featured event found
-                        </p>
-                    )
-              }
+            <img src={attachment.url} />
+            <div className='content'>
+                <p>{message.content}</p>
+            </div>
         </div>
         < br/><br/><br/>
         </>

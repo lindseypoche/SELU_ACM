@@ -10,25 +10,36 @@ export class EventsPage2 extends React.Component {
     this.state = {
       events: [],
       eventsIsLoaded: false,
+      eventsError: null,
       featured: {}, 
       featuredIsLoaded: false,
+      featuredError: null,
+      message: {},
+      attachment: {}
     };
   }
 
   componentDidMount() {
 
+    // const acmFeaturedChannel = "817106404842143805"
+    const cakeFeaturedChannel = "814350227544604692"
+
     // fetch Featured data 
-    axios.get('http://localhost:8080/featured/817106404842143805').then((response) => {
+    axios.get("http://localhost:8080/featured/" + cakeFeaturedChannel).then((response) => {
       this.setState({ 
         featured: response.data, 
+        message: response.data.message,
+        attachment: response.data.message.attachments,
         featuredIsLoaded: true,
        });
       console.log("featured: ", this.state.featured);
+      console.log("message: ", this.state.message);
+      console.log("attachment: ", this.state.attachment);
     }, 
-      (error) => {
+      (featuredError) => {
         this.setState({
           featuredIsLoaded: true, 
-          error
+          featuredError
         });
       }
     );
@@ -41,30 +52,28 @@ export class EventsPage2 extends React.Component {
        });
       console.log("events: ", this.state.events);
     }, 
-      (error) => {
+      (eventsError) => {
         this.setState({
           eventsIsLoaded: true, 
-          error
+          eventsError
         });
       }
     );
 
   }
 
-
   render() {
-    const { error, eventsIsLoaded, events, featuredIsLoaded, featured } = this.state; 
+    const { eventsError, eventsIsLoaded, events, featuredError, featuredIsLoaded, featured, message, attachment } = this.state; 
 
-    if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!eventsIsLoaded || !featuredIsLoaded) {
-      return <div>Loading...</div>
-    } else {
+      // return both featured and events 
         return (
             <>
-            {/* <Featured featured={featured} /> */}
+            { !featuredError ? (
+                <>
+                  {/* <p>{message.id} : {attachment.url}</p> */}
+                  {/* <Featured key={featured.channel_id} message={message} attachment={attachment} /> */}
 
-          <Parallax key={this.state.featured.channel_id} blur={3} bgImage={this.state.featured.message.attachments.url} bgImageAlt="never trust a bunny" strength={200} >
+                  <Parallax key={message.channel_id} blur={3} bgImage={attachment.url} bgImageAlt="never trust a bunny" strength={200} >
                   <div style={
                       {
                           height: '700px',
@@ -83,22 +92,28 @@ export class EventsPage2 extends React.Component {
                             backgroundColor:'#fff', 
                         }
                     }>
-                        <p style={
-                            {
-                            }
-                        }>
-                            {this.state.featured.message.content.substring(0, 250)}
+                        <p>
+                            {message.content}
                         </p>
                     </div>
                   </div>
               </Parallax> 
 
 
+                </>
+              ) : (
+                <div>No featured event found</div>
+              )
+            }
 
-            <Events events={events} />
+            { !eventsError ? (
+                <Events events={events} />
+            ) : (
+                <div>No events found</div>
+            )
+            }
             </>
         )
-    }
   }
 }
 

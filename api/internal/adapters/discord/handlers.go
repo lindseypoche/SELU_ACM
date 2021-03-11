@@ -48,7 +48,6 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if ok := Validate(s, m.Message); !ok {
 		return
 	}
-	// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your message was not posted to the web")
 
 	msg := domain.Message{
 		ID:           m.ID,
@@ -70,12 +69,10 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		},
 	}
 
-	resp, err := messageService.CreateMessage(msg)
+	_, err := messageService.CreateMessage(msg)
 	if err != nil {
-		_, _ = s.ChannelMessageSend(m.ChannelID, err.Error())
 		return
 	}
-	_, _ = s.ChannelMessageSend(m.ChannelID, resp.Success)
 }
 
 // should be changed to MessageEdited
@@ -83,12 +80,13 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
 	if ok := Validate(s, m.Message); !ok {
-		// _, _ = s.ChannelMessageSend(m.ChannelID, "access denied: your edit was not updated on the web")
 		return
 	}
 
-	// editedTimestamp := date_utils.GetNowUnix()
-	// fmt.Println(editedTimestamp)
+	// validate user is not bot
+	if m.Author.ID == s.State.User.ID || m.Author.Bot {
+		return
+	}
 
 	fmt.Println("m.Pinned: ", m.Pinned)
 	if m.Pinned == true {
@@ -116,10 +114,8 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		}
 		err := messageService.UpdateLatestPin(pin)
 		if err != nil {
-			_, _ = s.ChannelMessageSend(m.Message.ChannelID, err.GetMessage())
 			return
 		}
-		_, _ = s.ChannelMessageSend(m.Message.ChannelID, fmt.Sprintf("channel_id: %s, did_pin: %v", pin.ChannelID, m.Pinned))
 		return
 	}
 
@@ -129,30 +125,31 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		EditedTimestamp: 0,
 	}
 
-	resp, restErr := messageService.UpdateMessage(msg)
+	_, restErr := messageService.UpdateMessage(msg)
 	if restErr != nil {
-		_, _ = s.ChannelMessageSend(m.Message.ChannelID, restErr.GetMessage())
 		return
 	}
-	_, _ = s.ChannelMessageSend(m.Message.ChannelID, fmt.Sprintf("edited_timestamp: %d", msg.EditedTimestamp))
-	_, _ = s.ChannelMessageSend(m.Message.ChannelID, resp.Success)
 }
 
 // MessageDeleted handles message deleted reactions
 func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
-
+	// validate user is not bot
+	if m.Author.ID == s.State.User.ID || m.Author.Bot {
+		return
+	}
 	id := m.ID
 	restErr := messageService.DeleteMessage(id)
 	if restErr != nil {
-		_, _ = s.ChannelMessageSend(m.ChannelID, restErr.GetMessage())
 		return
 	}
-	_, _ = s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("message %s successfully deleted", id))
 }
 
 // MessageReactionAdded handles reactions added to a message
 func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-
+	// validate user is not bot
+	if r.MessageReaction.UserID == s.State.User.ID {
+		return
+	}
 	reaction := domain.MessageReaction{
 		UserID:    r.UserID,
 		MessageID: r.MessageID,
@@ -163,15 +160,15 @@ func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd)
 
 	restErr := messageService.UpdateReaction(reaction)
 	if restErr != nil {
-		_, _ = s.ChannelMessageSend(r.ChannelID, restErr.GetMessage())
 		return
 	}
-	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s added to db", r.Emoji.Name))
 }
 
 // MessageReactionRemoved handles reactions removed
 func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
-
+	if r.MessageReaction.UserID == s.State.User.ID {
+		return
+	}
 	// reaction := domain.Emoji{}
 	reaction := domain.MessageReaction{
 		UserID:    r.UserID,
@@ -183,10 +180,8 @@ func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRe
 
 	restErr := messageService.RemoveReaction(reaction)
 	if restErr != nil {
-		_, _ = s.ChannelMessageSend(r.ChannelID, restErr.GetMessage())
 		return
 	}
-	_, _ = s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("emoji %s deleted from db", r.Emoji.Name))
 }
 
 // ChannelPinsUpdated : may do something with pins
