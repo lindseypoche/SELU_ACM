@@ -196,6 +196,19 @@ func (repo *mongoRepo) Update(message *domain.Message) (*domain.Response, rest.E
 		return nil, rest.NewInternalServerError("error updating message in database", err)
 	}
 
+	// check if edited message was pinned, if so, then update the channels collection
+	if message.Pinned {
+		repo.InsertLatestPinned(&domain.Pin{
+			MessageID: message.ID,
+			Message: &domain.Message{
+				Content:    message.Content,
+				Pinned:     true,
+				Attachment: message.Attachment,
+			},
+			ChannelID: message.ChannelID,
+		})
+	}
+
 	// return response ok
 	resp := &domain.Response{Success: "successfully updated message in database"}
 	return resp, nil
@@ -230,18 +243,29 @@ func (repo *mongoRepo) AddReaction(r domain.MessageReaction) rest.Err {
 }
 
 // Delete deletes a message from the database
-func (repo *mongoRepo) Delete(messageID string) rest.Err {
+func (repo *mongoRepo) Delete(message *domain.Message) rest.Err {
 	ctx, cancel := context.WithTimeout(context.Background(), repo.timeout)
 	defer cancel()
 
 	collection := repo.client.Database("acm").Collection("messages")
+	filter := bson.M{"id": message.ID}
 
-	filter := bson.M{"id": messageID}
-
-	// delete item
+	// delete from messages document db
 	_, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
-		return rest.NewInternalServerError("error when removing emoji in database", err)
+		return rest.NewInternalServerError("error when removing message in database", err)
+	}
+
+	// if the deleting message was pinned, delete the pin from the channels collection.
+	if message.Pinned {
+		// ctx, _ := context.WithTimeout(context.Background(), repo.timeout)
+		channelsCollection := repo.client.Database("acm").Collection("channels")
+		filter = bson.M{"id": message.ChannelID}
+
+		_, err := channelsCollection.DeleteOne(ctx, filter)
+		if err != nil {
+			return rest.NewInternalServerError("error when removing pinned message in database", err)
+		}
 	}
 	return nil
 }
@@ -282,6 +306,7 @@ func (repo *mongoRepo) InsertLatestPinned(pin *domain.Pin) rest.Err {
 	filter := bson.M{"id": pin.ChannelID}
 	// if id doesn't exist, create new channel document
 	count, err := collection.CountDocuments(ctx, filter)
+	log.Println("COUNT: ", count)
 	if err != nil {
 		return rest.NewInternalServerError("error when counting number of docuemnts in database", err)
 	}
@@ -290,7 +315,9 @@ func (repo *mongoRepo) InsertLatestPinned(pin *domain.Pin) rest.Err {
 	if count > 0 {
 		update := bson.M{
 			"$push": bson.M{
+				"id": pin.ChannelID,
 				"latest_pin": bson.M{
+					"message_id": pin.MessageID,
 					"message":    pin.Message,
 					"pinned_at":  pin.PinnedAt,
 					"channel_id": pin.ChannelID,

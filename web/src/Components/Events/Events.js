@@ -27,7 +27,7 @@ const Events = ({ events }) => {
               </Card.Body>
               <Card.Footer>
                 <img style={{marginRight: "10px", height: "50px", width: "50px", borderRadius: "50%", textAlign: "left"}} className='discord-avatar' src={event.author.avatar.image_url} />
-                <small className="text-muted">edited at {event.timestamp}</small>
+                <small className="text-muted"><br />created at {event.timestamp}</small>
               </Card.Footer>
             </Card>
           ))

@@ -10,7 +10,7 @@ type MessageRepository interface {
 	GetByAuthor(string) (*[]Message, rest.Err)
 	Update(*Message) (*Response, rest.Err)
 	AddReaction(MessageReaction) rest.Err
-	Delete(string) rest.Err
+	Delete(*Message) rest.Err
 	DeleteReaction(MessageReaction) rest.Err
 	InsertLatestPinned(*Pin) rest.Err
 	GetLatestPinned(string) (*Pin, rest.Err)

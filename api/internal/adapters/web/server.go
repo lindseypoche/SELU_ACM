@@ -27,7 +27,7 @@ func getPort() string {
 	if os.Getenv("PORT") != "" {
 		return os.Getenv("PORT")
 	}
-	return "8081"
+	return "8080"
 }
 
 // StartApplication ...

@@ -49,6 +49,17 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	// validate user is not bot
+	if m.Author.ID == s.State.User.ID || m.Author.Bot {
+		return
+	}
+
+	// ignore messages from discord pins
+	if m.Type == discordgo.MessageTypeChannelPinnedMessage {
+		fmt.Println("pinned messages from bot are not read")
+		return
+	}
+
 	msg := domain.Message{
 		ID:           m.ID,
 		ChannelID:    m.ChannelID,
@@ -57,6 +68,7 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Timestamp:    snowflakeToUnix(m.ID),
 		MentionRoles: m.MentionRoles,
 		Attachment:   getAttachment(m.Attachments),
+		Pinned:       m.Pinned,
 		Author: &domain.User{
 			ID:            m.Author.ID,
 			Username:      m.Author.Username,
@@ -92,12 +104,13 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	if m.Pinned == true {
 		// update LatestPin in channel
 		pin := &domain.Pin{
+			MessageID: m.ID,
 			ChannelID: m.ChannelID,
 			Message: &domain.Message{
 				ID:         m.ID,
 				ChannelID:  m.ChannelID,
 				Content:    m.Content,
-				Pinned:     m.Pinned,
+				Pinned:     true,
 				Attachment: getAttachment(m.Attachments),
 				Author: &domain.User{
 					ID:            m.Author.ID,
@@ -133,12 +146,13 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
 // MessageDeleted handles message deleted reactions
 func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
-	// validate user is not bot
-	if m.Author.ID == s.State.User.ID || m.Author.Bot {
-		return
+
+	message := domain.Message{
+		ID:        m.ID,
+		ChannelID: m.ChannelID,
+		Pinned:    m.Pinned,
 	}
-	id := m.ID
-	restErr := messageService.DeleteMessage(id)
+	restErr := messageService.DeleteMessage(&message)
 	if restErr != nil {
 		return
 	}
@@ -146,10 +160,7 @@ func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
 
 // MessageReactionAdded handles reactions added to a message
 func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	// validate user is not bot
-	if r.MessageReaction.UserID == s.State.User.ID {
-		return
-	}
+
 	reaction := domain.MessageReaction{
 		UserID:    r.UserID,
 		MessageID: r.MessageID,
@@ -166,9 +177,7 @@ func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd)
 
 // MessageReactionRemoved handles reactions removed
 func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
-	if r.MessageReaction.UserID == s.State.User.ID {
-		return
-	}
+
 	// reaction := domain.Emoji{}
 	reaction := domain.MessageReaction{
 		UserID:    r.UserID,

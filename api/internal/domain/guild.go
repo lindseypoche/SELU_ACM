@@ -45,7 +45,7 @@ type Message struct {
 	Attachment      *MessageAttachment `json:"attachments" bson:"attachments,omitempty"`
 	Embeds          *MessageEmbed      `json:"embeds,omitempty" bson:"embeds,omitemtpy"`
 	Mentions        []*User            `json:"mentions,omitempty" bson:"mentions,omitempty"`
-	Pinned          bool               `json:"pinned,omitempty" bson:"pinned,omitempty"`
+	Pinned          bool               `json:"pinned" bson:"pinned"`
 	Reactions       []MessageReaction  `json:"reactions,omitempty" bson:"reactions,omitempty"`
 }
 
@@ -155,6 +155,7 @@ type Role struct {
 
 // Pin stores data about pinned messages in a channel
 type Pin struct {
+	MessageID string   `json:"message_id" bson:"message_id"`
 	Message   *Message `json:"message" bson:"message"`
 	PinnedAt  int      `json:"pinned_at" bson:"pinned_at"`
 	ChannelID string   `json:"channel_id,omitempty" bson:"channel_id,omitempty"`
