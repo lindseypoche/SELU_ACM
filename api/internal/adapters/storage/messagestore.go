@@ -302,6 +302,7 @@ func (repo *mongoRepo) InsertLatestPinned(pin *domain.Pin) rest.Err {
 		if err != nil {
 			return rest.NewInternalServerError("error when updating channel in database", err)
 		}
+		return nil
 	}
 
 	// create new channel document
