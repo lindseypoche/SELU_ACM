@@ -30,9 +30,9 @@ func NewMessageController(messageService domain.MessageService) MessageControlle
 
 // Get gets a message with the specified id from the uri
 func (c *messageController) Get(ctx *gin.Context) {
-
-	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	messageID := ctx.Param("event_id")
 	if messageID == "" {
@@ -50,9 +50,9 @@ func (c *messageController) Get(ctx *gin.Context) {
 
 // GetAll gets all messages
 func (c *messageController) GetAll(ctx *gin.Context) {
-
-	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	messages, getErr := c.messageService.GetAllMessages()
 	if getErr != nil {
@@ -64,9 +64,9 @@ func (c *messageController) GetAll(ctx *gin.Context) {
 
 // Get gets a message with the specified id from the uri
 func (c *messageController) GetByAuthor(ctx *gin.Context) {
-
-	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	authorID := ctx.Param("officer_id")
 	// TODO: validate authorID
@@ -84,8 +84,9 @@ func (c *messageController) GetByAuthor(ctx *gin.Context) {
 }
 
 func (c *messageController) GetFeatured(ctx *gin.Context) {
-	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	channel := ctx.Param("channel_id")
 	if channel == "" {
