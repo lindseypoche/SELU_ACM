@@ -1,0 +1,46 @@
+version: '3'
+services:
+
+  redis:
+    image: redis:alpine
+    container_name: acm-redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+
+  mongodb:
+    image: mongo:latest
+    container_name: acm-mongo
+    hostname: ${MONGO_HOST}
+    restart: on-failure
+    # command: [--auth]
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongodata:/data/db"
+    env_file: 
+      - ./.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+
+  bot:
+    build:
+      context: .
+      dockerfile: ./api/cmd/bot/Dockerfile
+    container_name: acm-bot
+    depends_on:
+      - mongodb 
+      - redis
+    links:
+      - mongodb
+      - redis
+    restart: unless-stopped
+    environment: 
+      - BOT_TOKEN=${BOT_TOKEN}
+      - MONGO_HOST=${MONGO_HOST}
+
+
+volumes:
+  mongodata:
