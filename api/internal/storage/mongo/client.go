@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"time"
 
@@ -33,26 +32,24 @@ func GetClient() *mongo.Client {
 		uri = defaultHost
 	}
 
-	log.Println("uri: ", uri)
+	// h, err := url.Parse(uri)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	h, err := url.Parse(uri)
-	if err != nil {
-		panic(err)
-	}
-
-	// check scheme
-	if h.Scheme != "mongodb" {
-		log.Println("error: h.Scheme =", h.Scheme)
-		panic(err)
-	}
+	// // check scheme
+	// if h.Scheme != "mongodb" {
+	// 	log.Println("error: h.Scheme =", h.Scheme)
+	// 	panic(err)
+	// }
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	clientOptions := options.Client().ApplyURI(uri)
-	// SetAuth(options.Credential{
-	// AuthSource: os.Getenv("MONGO_INITDB_DATABASE"),
-	// Username:   os.Getenv("MONGO_INITDB_ROOT_USERNAME"),
-	// Password:   os.Getenv("MONGO_INITDB_ROOT_PASSWORD"),
-	// })
+	clientOptions := options.Client().ApplyURI(uri).
+		SetAuth(options.Credential{
+			// AuthSource: "admin",
+			Username: os.Getenv("MONGO_INITDB_ROOT_USERNAME"),
+			Password: os.Getenv("MONGO_INITDB_ROOT_PASSWORD"),
+		})
 
 	defer cancel()
 

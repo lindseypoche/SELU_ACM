@@ -4,43 +4,86 @@ services:
   redis:
     image: redis:alpine
     container_name: acm-redis
-    restart: on-failure
+    restart: on-failure:5
     ports:
       - "6379:6379"
+    networks:
+      - backend
 
   mongodb:
     image: mongo:latest
     container_name: acm-mongo
     hostname: ${MONGO_HOST}
-    restart: on-failure
-    # command: [--auth]
+    restart: on-failure:5
     ports:
       - "27017:27017"
     volumes:
       - "mongodata:/data/db"
+    networks:
+      - backend
     env_file: 
       - ./.env
-    environment:
+    environment: # mongo auto sets --auth flag
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    command:
+      mongod
 
   bot:
     build:
       context: .
       dockerfile: ./api/cmd/bot/Dockerfile
     container_name: acm-bot
+    links:
+      - mongodb
     depends_on:
       - mongodb 
       - redis
+    restart: unless-stopped
+    # volumes:
+    #   - .:/go/src/github.com/cmd-ctrl-q/SELU_ACM # broken
+    networks:
+      - backend
+    environment: 
+      BOT_TOKEN: ${BOT_TOKEN}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+
+  api:
+    build:
+      context: .
+      dockerfile: ./api/cmd/server/Dockerfile
+    container_name: acm-api
+    ports:
+      - 8081:8081
     links:
       - mongodb
-      - redis
+    depends_on:
+      - mongodb
+      - redis 
     restart: unless-stopped
+    # volumes:
+    #   - .:/go/src/github.com/cmd-ctrl-q/SELU_ACM # broken
+    networks: 
+      - backend 
+      # - frontend
     environment: 
-      - BOT_TOKEN=${BOT_TOKEN}
-      - MONGO_HOST=${MONGO_HOST}
-
+      API_HOST: ${API_HOST}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
 
 volumes:
   mongodata:
+
+networks:
+  backend:
+    name: backend-net
+    driver: bridge
+  # frontend:
+  #   name: frontend
+  #   driver: bridge
