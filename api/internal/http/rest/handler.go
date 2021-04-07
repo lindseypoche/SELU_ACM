@@ -18,7 +18,7 @@ func Handler(l listing.Service) http.Handler {
 
 	// cors
 	router.Use(cors.New(cors.Config{
-		AllowedOrigins: []string{"http://web:8081"}, // allow from docker web container
+		AllowedOrigins: []string{"http://web:3000"}, // allow from docker web container
 		AllowedMethods: []string{"GET"},
 		AllowedHeaders: []string{"Origin"},
 		ExposedHeaders: []string{"Content-Length"},

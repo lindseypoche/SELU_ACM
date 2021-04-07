@@ -40,7 +40,7 @@ type config struct {
 // Init initializes the bot on start up
 func Init() {
 
-	file, err := ioutil.ReadFile("./internal/http/discord/temp.json")
+	file, err := ioutil.ReadFile("./internal/http/discord/acm.json")
 	if err != nil {
 		log.Fatal("Could not read json file: ", err)
 	}
