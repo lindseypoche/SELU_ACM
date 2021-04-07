@@ -22,10 +22,10 @@ export class EventsPage2 extends React.Component {
   componentDidMount() {
 
     const acmFeaturedChannel = "817106404842143805" // events channel
-    // const cakeFeaturedChannel = "814350227544604692"
+    // const acmFeaturedChannel = "814350227544604692" // cakes events channel
 
-    // fetch Featured data 
-    axios.get("http://localhost:8080/featured/" + acmFeaturedChannel).then((response) => {
+    // fetch Featured data. api or acm-api
+    axios.get("http://localhost:8081/api/pins/channel?id=" + acmFeaturedChannel).then((response) => {
       this.setState({ 
         featured: response.data, 
         message: response.data.message,
@@ -45,7 +45,7 @@ export class EventsPage2 extends React.Component {
     );
 
     // Fetch events data
-    axios.get('http://localhost:8080/events').then((response) => {
+    axios.get('http://localhost:8081/api/events').then((response) => {
       this.setState({ 
         events: response.data, 
         eventsIsLoaded: true,

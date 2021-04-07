@@ -17,6 +17,7 @@ services:
     restart: on-failure:5
     ports:
       - "27017:27017"
+    # volume uses a bind mount to persist db data
     volumes:
       - "mongodata:/data/db"
     networks:
@@ -34,6 +35,7 @@ services:
     build:
       context: .
       dockerfile: ./api/cmd/bot/Dockerfile
+    image: acm-selu-bot
     container_name: acm-bot
     links:
       - mongodb
@@ -41,8 +43,11 @@ services:
       - mongodb 
       - redis
     restart: unless-stopped
-    # volumes:
-    #   - .:/go/src/github.com/cmd-ctrl-q/SELU_ACM # broken
+    # bind mount. rebuilds on change. 
+    # bind mount is not necessary unless you want live changes.
+    # bot probably needs its own repo in the future
+    # volumes: 
+    #   - ./api  # specify your current dir
     networks:
       - backend
     environment: 
@@ -56,6 +61,8 @@ services:
     build:
       context: .
       dockerfile: ./api/cmd/server/Dockerfile
+    # build custom image
+    image: acm-selu-api
     container_name: acm-api
     ports:
       - 8081:8081
@@ -65,17 +72,32 @@ services:
       - mongodb
       - redis 
     restart: unless-stopped
-    # volumes:
-    #   - .:/go/src/github.com/cmd-ctrl-q/SELU_ACM # broken
+    # changes here will update files in container 
+    # volumes: 
+    #   - ./api  # specify your current dir
     networks: 
       - backend 
-      # - frontend
+      - frontend
     environment: 
       API_HOST: ${API_HOST}
       MONGO_HOST: ${MONGO_HOST}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+
+  web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile
+    container_name: acm-web
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks: 
+      - frontend 
+      - backend
 
 volumes:
   mongodata:
@@ -84,6 +106,6 @@ networks:
   backend:
     name: backend-net
     driver: bridge
-  # frontend:
-  #   name: frontend
-  #   driver: bridge
+  frontend:
+    name: frontend-net
+    driver: bridge
