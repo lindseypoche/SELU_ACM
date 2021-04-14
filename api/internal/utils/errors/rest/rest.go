@@ -105,3 +105,11 @@ func NewInternalServerError(message string, err error) Err {
 	}
 	return result
 }
+
+func NewStatusNotImplemented(message string) Err {
+	return restErr{
+		Message: message,
+		Status:  http.StatusNotImplemented,
+		Error:   "not_implemented",
+	}
+}

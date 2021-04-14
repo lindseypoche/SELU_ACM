@@ -69,16 +69,13 @@ export class EventsPage2 extends React.Component {
         return (
             <>
             { !featuredError ? (
-                <>
-                  {/* <p>{message.id} : {attachment.url}</p> */}
-                  {/* <Featured key={featured.channel_id} message={message} attachment={attachment} /> */}
 
                   <Parallax key={message.channel_id} blur={3} bgImage={attachment.url} bgImageAlt="never trust a bunny" strength={200} >
                   <div style={
                       {
                           height: '700px',
                           position: 'relative',
-                          margin: '0 auto',
+                          margin: '0 auto'
                       }
                       }>
                     <div style={
@@ -98,18 +95,21 @@ export class EventsPage2 extends React.Component {
                     </div>
                   </div>
               </Parallax> 
-
-
-                </>
               ) : (
-                <div>No featured event found</div>
+                <div style={
+                  {
+                    height: '150px'
+                  }
+                }>
+
+                </div> 
               )
             }
 
             { !eventsError ? (
                 <Events events={events} />
             ) : (
-                <div>No events found</div>
+                <div>No upcomming events</div>
             )
             }
             </>
