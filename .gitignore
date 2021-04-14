@@ -1,8 +1,7 @@
 # Temp
 **/config.json
-docker-compose.yml
-**/Dockerfile
 *.drawio
+.env
 
 # Compiled source #
 ###################
