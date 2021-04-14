@@ -12,21 +12,21 @@ import Resources from './Pages/Resources/Resources.js';
 import SingleEventPage from './Pages/SingleEventPage/SingleEventPage.js';
 import ScrollToTop from './Components/BackTop/BackTop.js';
 
-
 function App() {
+
   return (
     <div className="App">
       <BrowserRouter>
-        <NavigationBar />
+        <NavigationBar/>
         <Switch>
-          <Route exact path='/' component={Home} />
+          <Route exact path='/home' component={Home} />
           <Route exact path='/events' component={EventsPage2} />
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />
           <Route exact path='/singleeventpage' component={SingleEventPage} />
         </Switch>
-        <ScrollToTop/>
+        <ScrollToTop />
         {/* Render components in app*/}
       </BrowserRouter>
 
