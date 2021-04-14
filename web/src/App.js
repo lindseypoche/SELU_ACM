@@ -7,8 +7,10 @@ import Home from './Components/Home/Home.js';
 import Calendar from './Components/Calendar/CalendarApp.js';
 import Officers from './Components/Officers/Officers.js'
 import EventsPage2 from './Pages/EventsPage/EventsPage2.js';
-import Resources from './Components/Resources/Resources';
+import Resources from './Components/Resources/Resources.js';
 import Footer from './Components/Footer/Footer.js';
+import SingleEventPage from './Components/SingleEventPage/SingleEventPage.js';
+import ScrollToTop from './Components/BackTop/BackTop.js';
 
 
 function App() {
@@ -22,8 +24,9 @@ function App() {
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />
+          <Route exact path='/singleeventpage' component={SingleEventPage} />
         </Switch>
-
+        <ScrollToTop/>
         {/* Render components in app*/}
       </BrowserRouter>
 
