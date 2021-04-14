@@ -14,7 +14,9 @@ class Footer extends Component {
     render() {
         return(
             <div class= "footie">
-                <div class = "Column">
+                <br></br>
+                <br></br>
+                <div class = "Column1">
                     <div class = "feetpics">
                         <a href="https://www.southeastern.edu/">
                         <div class="selu" tag={Link} to='/'><img style = {{height: '55px', width: '50px', marginRight: '10px'}} src = {LOGO} /></div>
@@ -25,7 +27,7 @@ class Footer extends Component {
                         
                     </div>
                         <div class = "address">
-                            <br></br>
+
                             <br></br>
                             <br></br>
                             <br></br>
@@ -35,11 +37,11 @@ class Footer extends Component {
                         </div>
                     <br></br>
                 </div>
-                <div class = ' Column'>
-                    <br></br>
-                    <br></br>
-                    <br></br>
+                <div class = ' Column2'>
+                <br></br>
                     <a href="mailto:acm@selu.edu">Questions or Comments</a>
+                    <br></br>
+                    <a href = "https://my-store-11562067.creator-spring.com/">Want Merch?</a>
                     <br></br>
                     <a href = "https://www.southeastern.edu/resources/policies/index.html">University Policies</a>
                     <br></br>
@@ -48,6 +50,7 @@ class Footer extends Component {
                     <a href = "https://www.acm.org/chapters/about-chapters"> Chapter Information</a>
                     <br></br>
                     <a href = "https://www.acm.org/chapters/chapter-policies">Chapter Policies and Bylaws</a>
+                    <br></br>
                 </div>
 
             </div>

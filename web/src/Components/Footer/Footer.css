@@ -1,31 +1,36 @@
 .footie {
-
-    margin-top: 1rem;
-    padding: 1rem;
+    height: 15rem;
+    
     background-color:  #2c2c2c;
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    position: relative;
     width: 100%;
-    color: rgb(206, 204, 204);
-    font: 15pt 'RobotoRegular', Arial, sans-serif;        
+    color: rgb(206, 204, 204);    
 }
+
 .feetpics{
- 
     float: left;
     min-width: 80px;
-    padding: 15px 10px 25px 15px;
     border-right: 1px solid #a8a9b3;
     margin-top: 8px;
-    margin-bottom: 15px;
+    
 }
-.Column {
+
+.Column1 {
     float: left;
     min-width: 300px;
     padding: 5px 5px 15px 15px;
     font: 9pt 'RobotoRegular', Arial, sans-serif;
     line-height: 1.8;
 }
+
+.Column2 {
+    float: right;
+    min-width: 300px;
+    padding: 5px 5px 15px 15px;
+    font: 9pt 'RobotoRegular', Arial, sans-serif;
+    line-height: 1.8;
+}
+
 .address {
     vertical-align: middle;
 }
