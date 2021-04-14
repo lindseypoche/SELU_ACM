@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './SingleEventPage.css';
 import { Sidebar, Nav, Button, Avatar, Image, Box } from 'grommet';
 import { FaRegComment, FaRegHeart, FaGrinTongueWink } from 'react-icons/fa';
+
 class SingleEventPage extends Component {
 
     render() {

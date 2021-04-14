@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { Parallax } from 'react-parallax';
 import Events from "../../Components/Events/Events.js"
-import Featured from "../../Components/Featured/Featured.js"
+// import Featured from ".../Components/Featured/Featured.js"
 
 export class EventsPage2 extends React.Component {
   constructor(props) {

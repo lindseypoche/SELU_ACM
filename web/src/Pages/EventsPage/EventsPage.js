@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"
 import { Parallax } from 'react-parallax';
-import Featured from "../../Components/Featured/Featured.js"
+// import Featured from ".../Components/Featured/Featured.js"
 import Events from "../../Components/Events/Events.js"
 
 const EventsPage = () => {
