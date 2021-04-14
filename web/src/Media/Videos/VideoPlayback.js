@@ -1,5 +1,5 @@
 import React from 'react'
-import finalcut from '../video/finalcut0000-0902.mp4'
+import finalcut from './finalcut0000-0902.mp4'
 
 const VideoPlayback = () => {
     return (

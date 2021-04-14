@@ -1,5 +1,4 @@
-import slugo from "./slugo.png"
-
+// import slugo from "./slugo.png"
 import CardColumns from 'react-bootstrap/CardColumns';
 import Card from 'react-bootstrap/Card';
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import acmlogo from '../image/association-for-computing-machinery-logo.png';
+import acmlogo from '../../Media/Images/association-for-computing-machinery-logo.png';
 import {
   Collapse,
   Navbar,
@@ -47,6 +47,9 @@ const NavigationBar = (props) => {
             </NavItem>
             <NavItem>
               <NavLink className="acm" tag={Link} to="/calendar">Calendar</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink className="acm" tag={Link} to="/singleeventpage">SEP</NavLink>
             </NavItem>
           </Nav>
           {/* <Nav className="rightSide" navbar>

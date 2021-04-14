@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import './Resources.css';
-import Fay from '../image/Schedules/FAY125Schedule.png'
-import CSTB from '../image/Schedules/CSTB2026Schedule.png'
-
+import Fay from '../../Media/Images/Schedules/FAY125Schedule.png'
+import CSTB from '../../Media/Images/Schedules/CSTB2026Schedule.png'
 
 class Resources extends Component {
 

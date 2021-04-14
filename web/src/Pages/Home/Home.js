@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 import "./Home.css";
 
 import ParallaxContainer from "./ParallaxContainer";
-import discord from "../image/Discord.png";
-import VideoPlayback from '../video/VideoPlayback.js'
+import discord from "../../Media/Images/Discord.png";
+import VideoPlayback from '../../Media/Videos/VideoPlayback.js';
 
 
 class Home extends Component {
