@@ -1,19 +1,6 @@
 import React, { useState } from 'react';
-import acmlogo from '../image/association-for-computing-machinery-logo.png';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  NavbarText
-} from 'reactstrap';
+import acmlogo from '../../Media/Images/association-for-computing-machinery-logo.png';
+import { Nav, Navbar} from "react-bootstrap";
 import {
   BrowserRouter as Router,
   Switch,
@@ -29,53 +16,18 @@ const NavigationBar = (props) => {
 
   return (
     <div className="navacmbg">
-      <Navbar className="navacm" expand="md">
-        <NavbarBrand>
-          <NavLink className="acm" tag={Link} to='/'><img style = {{height: '50px', width: '50px', marginRight: '10px'}} src = {acmlogo} />Association for Computing Machinery</NavLink>
-        </NavbarBrand>
-        <NavbarToggler onClick={toggle} />
-        <Collapse isOpen={isOpen} navbar>
-          <Nav className="mr-auto" navbar>
-          <NavItem>
-              <NavLink className="acm" tag={Link} to="/officers">Officers</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink className="acm" tag={Link} to="/events">Events</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink className="acm" tag={Link} to="/resources">Resources</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink className="acm" tag={Link} to="/calendar">Calendar</NavLink>
-            </NavItem>
+      < Navbar className="navacm" collapseOnSelect expand="md" bg="dark" fixed="top" variant="dark" >
+        <Navbar.Brand className="acm" href="/home"><img style={{ height: '50px', width: '50px', marginRight: '10px' }} src={acmlogo} />Association for Computing Machinery</Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link className="acm" href="/officers">Officers</Nav.Link>
+            <Nav.Link className="acm" href="/events">Events</Nav.Link>
+            <Nav.Link className="acm" href="/resources">Resources</Nav.Link>
+            <Nav.Link className="acm" href="/calendar">Calendar</Nav.Link>
           </Nav>
-          {/* <Nav className="rightSide" navbar>
-          <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle className="acm" nav caret>
-                Admin
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem className="acm" tag={Link} to="/members">
-                  Members
-                </DropdownItem>
-                
-                <DropdownItem className="acm" tab={Link} to="/events">
-                  Events
-                </DropdownItem>
-                <DropdownItem className="acm">
-                  Images
-                </DropdownItem>
-              </DropdownMenu>
-              </UncontrolledDropdown>
-              <NavItem>
-                <NavLink className="acm" tag={Link} to="/join">Join</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink className="acm" tag={Link} to="/login">Login</NavLink>
-              </NavItem>
-            </Nav> */}
-        </Collapse>
-      </Navbar>
+        </Navbar.Collapse>
+      </Navbar >
     </div>
   );
 }

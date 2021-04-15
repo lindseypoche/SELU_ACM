@@ -5,7 +5,6 @@ import Fay from '../image/Schedules/FAY125Schedule.png'
 import CSTB from '../image/Schedules/CSTB2026Schedule.png'
 
 
-
 class Resources extends Component {
 
   render() {
