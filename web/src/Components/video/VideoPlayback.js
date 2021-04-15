@@ -4,14 +4,14 @@ import "VideoP";
 
 const VideoPlayback = () => {
     return (
-        <div className = "video" style={{height: '0px', width:'0px', overflow: 'visible', float:'left'}}>
+        <div className  style={{height: '0px', width:'0px', overflow: 'visible', float:'left'}}>
             <video
                 autoPlay
                 loop
                 style= {{
                     
                     position: "relative",
-                    width: '100vw',
+                    //width: '100vw',
                     // left: '50%',
                     top: '200px',
                     height: '50em',
