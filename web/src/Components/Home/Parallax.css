@@ -1,0 +1,16 @@
+.parallax{
+    background-color: rgba(230, 230, 230, 0.89);
+    display: block;
+    width:93%;
+    min-height:20em;
+    border-radius: .75em;
+    margin:auto;
+    margin-top: 3em;
+    z-index: 100;
+    left:3.5vw;
+    position: absolute;
+    box-shadow: 0px 0px 3px #4444;
+    padding: 3em;
+    height: auto;
+    /* border:1px solid black; */
+}
