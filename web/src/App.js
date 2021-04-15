@@ -11,7 +11,7 @@ import Resources from './Pages/Resources/Resources.js';
 // import Footer from './Unused Components/Footer/Footer.js';
 import SingleEventPage from './Pages/SingleEventPage/SingleEventPage.js';
 import ScrollToTop from './Components/BackTop/BackTop.js';
-
+import Footer from './Components/Footer/Footer.js';
 function App() {
 
   return (
@@ -29,7 +29,7 @@ function App() {
         <ScrollToTop />
         {/* Render components in app*/}
       </BrowserRouter>
-
+      <Footer></Footer>
     </div>
 
   );

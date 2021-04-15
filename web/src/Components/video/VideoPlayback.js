@@ -9,8 +9,9 @@ const VideoPlayback = () => {
                 loop
                 style= {{
                     
-                    position: "relative",
+                    position: "fixed",
                     width: '100vw',
+                    
                     // left: '50%',
                     // top: '50%',
                     height: '50em',
