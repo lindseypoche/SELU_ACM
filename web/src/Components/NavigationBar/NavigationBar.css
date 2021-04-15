@@ -6,12 +6,13 @@
 .navacm{
 
     background-color: #2c2c2c;
+    height: 110px;
 
 }
 
 .navacmbg{
     background-color: transparent;
-    padding: 2rem;
+    padding: 0rem;
     z-index: 100;
     width: 100%;
     border: 0px;
