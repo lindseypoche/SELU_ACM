@@ -10,7 +10,10 @@
 } 
 
 .resourcesPage{
-    padding-top: 8%;
+    padding-top: 50%;
+    position: relative;
+    
+    
 }
 
 .image{
