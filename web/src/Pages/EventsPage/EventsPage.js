@@ -77,7 +77,7 @@ export class EventsPage extends React.Component {
 
     return (
 
-    <div>
+    <div className="main">
       {/* <div className="banner">@kevin joined the discord server! Woot!</div> */}
       { pin.id != "" ? (
           <div className="featured__event">
