@@ -26,10 +26,11 @@ function App() {
           <Route exact path='/resources' component={Resources} />
           <Route exact path='/singleeventpage' component={SingleEventPage} />
         </Switch>
-        <ScrollToTop />
+        
         {/* Render components in app*/}
       </BrowserRouter>
       <Footer></Footer>
+      <ScrollToTop />
     </div>
 
   );

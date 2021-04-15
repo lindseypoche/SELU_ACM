@@ -1,9 +1,10 @@
 import React from 'react'
 import finalcut from '../video/finalcut0000-0902.mp4'
+import "VideoP";
 
 const VideoPlayback = () => {
     return (
-        <div style={{height: '0px', width:'0px', overflow: 'visible', float:'left'}}>
+        <div className = "video" style={{height: '0px', width:'0px', overflow: 'visible', float:'left'}}>
             <video
                 autoPlay
                 loop
@@ -13,7 +14,7 @@ const VideoPlayback = () => {
                     width: '100vw',
                     
                     // left: '50%',
-                    // top: '50%',
+                    top: '200px',
                     height: '50em',
                     float: 'left',
                     objectFit: 'cover',
