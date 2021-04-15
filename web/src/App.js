@@ -19,17 +19,18 @@ function App() {
       <BrowserRouter>
         <NavigationBar/>
         <Switch>
-          <Route exact path='/home' component={Home} />
+          <Route exact path='/' component={Home} />
           <Route exact path='/events' component={EventsPage} />
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />
           <Route exact path='/singleeventpage' component={SingleEventPage} />
         </Switch>
-        <ScrollToTop />
+        
         {/* Render components in app*/}
       </BrowserRouter>
-
+      <Footer></Footer>
+      <ScrollToTop />
     </div>
 
   );

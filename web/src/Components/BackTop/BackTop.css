@@ -4,4 +4,6 @@
     right: 0.5rem;
     animation: fadeIn 700ms ease-in-out 1s both;
     cursor: pointer;
+    color:rgb(80, 100, 100);
+    z-index: 100%;
   }
