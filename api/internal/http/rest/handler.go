@@ -9,7 +9,6 @@ import (
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/errors/rest"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/http_utils"
 	"github.com/gin-gonic/contrib/cors"
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +17,8 @@ func Handler(l listing.Service) http.Handler {
 
 	// cors
 	router.Use(cors.New(cors.Config{
-		AllowedOrigins: []string{"http://web:3000"}, // allow from docker web container
+		// AllowedOrigins: []string{"http://web:3000"}, // allow from docker web container
+		AllowedOrigins: []string{"http://localhost:8080"}, // allow all
 		AllowedMethods: []string{"GET"},
 		AllowedHeaders: []string{"Origin"},
 		ExposedHeaders: []string{"Content-Length"},
@@ -27,7 +27,7 @@ func Handler(l listing.Service) http.Handler {
 	}))
 
 	// load html/react templates in the web docker container
-	router.Use(static.Serve("/", static.LocalFile("web:/web/build", true)))
+	// router.Use(static.Serve("/", static.LocalFile("web:/web/build", true)))
 
 	// api routes
 	api := router.Group("/api")
@@ -175,7 +175,6 @@ func getLatestPinnedMessage(s listing.Service) func(*gin.Context) {
 		}
 
 		channelID := c.Request.FormValue("id")
-
 		if channelID == "" {
 			// c.JSON(http.StatusBadRequest, rest.NewBadRequestError("uri parameter 'id' could not be found")) // old
 			respErr := rest.NewRestError("uri parameter could not be found", 400, "bad_request", []interface{}{"uri paramter"})

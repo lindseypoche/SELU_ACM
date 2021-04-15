@@ -157,7 +157,6 @@ func (repo *ListRepo) GetLatestPinned(channelID string) (*listing.Message, rest.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	m := &listing.Message{}
 	filter := bson.M{
 		"channel_id": channelID,
 		"is_pinned":  true,
@@ -169,6 +168,7 @@ func (repo *ListRepo) GetLatestPinned(channelID string) (*listing.Message, rest.
 
 	cursor, err := messageCollection.Find(ctx, filter, findOptions)
 
+	m := &listing.Message{}
 	for cursor.Next(ctx) {
 		cursor.Decode(m)
 	}
@@ -177,8 +177,7 @@ func (repo *ListRepo) GetLatestPinned(channelID string) (*listing.Message, rest.
 		// log error
 		return nil, rest.NewInternalServerError("error due to cursor", err)
 	}
-
-	if m == nil || !m.IsPinned {
+	if m == nil {
 		return nil, rest.NewNotFoundError("message not found")
 	}
 

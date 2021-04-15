@@ -1,33 +1,33 @@
 import React from 'react'
-import finalcut from '../video/finalcut0000-0902.mp4'
+// import finalcut from '../video/finalcut0000-0902.mp4'
 
-const VideoPlayback = () => {
-    return (
-        <div style={{height: '0px', width:'0px', overflow: 'visible', float:'left'}}>
-            <video
-                autoPlay
-                loop
-                style= {{
+// const VideoPlayback = () => {
+//     return (
+//         <div style={{height: '0px', width:'0px', overflow: 'visible', float:'left'}}>
+//             <video
+//                 autoPlay
+//                 loop
+//                 style= {{
                     
-                    position: "relative",
-                    width: '100vw',
-                    // left: '50%',
-                    // top: '50%',
-                    height: '50em',
-                    float: 'left',
-                    objectFit: 'cover',
-                    // transform: 'translate(-50%, -50%)',
-                    zIndex: '-1',
-                    filter:"grayscale(30%)",
-                }}
-                >
-                    <source src= {finalcut} type='video/mp4'/>
-                </video>
-        </div>
-    )
-}
+//                     position: "relative",
+//                     width: '100vw',
+//                     // left: '50%',
+//                     // top: '50%',
+//                     height: '50em',
+//                     float: 'left',
+//                     objectFit: 'cover',
+//                     // transform: 'translate(-50%, -50%)',
+//                     zIndex: '-1',
+//                     filter:"grayscale(30%)",
+//                 }}
+//                 >
+//                     <source src= {finalcut} type='video/mp4'/>
+//                 </video>
+//         </div>
+//     )
+// }
 
-export default VideoPlayback
+// export default VideoPlayback
 
 
 // var NewComponent = React.createClass({

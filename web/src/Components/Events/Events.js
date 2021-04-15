@@ -1,42 +1,113 @@
-import slugo from "./slugo.png"
+import './Events.css'
 
-import CardColumns from 'react-bootstrap/CardColumns';
-import Card from 'react-bootstrap/Card';
+const readingTime = require('reading-time');
+
+function toDateFormat(unix) {
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+  var d = new Date(unix * 1000);
+  var month = months[d.getMonth()];
+  var f = month + " " + d.getDay().toString()
+  return f
+}
+
+function isExpiring(exp_date) {
+  var seconds_remaining = parseInt(exp_date) - Date.now()/ 1000
+  if(seconds_remaining < 0) {
+    return false
+  }
+  // if event is between 0 and 2 days 
+  if(seconds_remaining < 86400*2) {
+    return true
+  }
+  return false
+}
+
+function getRemainingTime(start_date) {
+  var format = ""
+  var delta = parseInt(start_date) - Date.now()/ 1000
+
+  if(delta < 0) {
+    return "ended"
+  }
+  if(delta < 3600) {
+    return "starts in < 1 hour"
+  }
+
+  // calculate and subtract days
+  var days = Math.floor(delta / 86400); 
+  delta -= days * 86400;
+  if(days < 2) {
+    format = "starts in " + days + " day"
+  } else {
+    format = "starts in " + days + " days"
+  }
+
+  // calculate and subtract hours 
+  var hours = Math.floor(delta / 3600) % 24;
+  delta -= hours * 3600;
+  if(hours < 2) {
+    format += " and " + hours + " hour"
+  } else {
+    format += " and " + hours + " hours"
+  }
+
+  return format
+}
 
 const Events = ({ events }) => {
 
     return (
-        <CardColumns>
+        <>
         {
-          (events.length > 0 ? (
-          events.map((event) => (
-          <Card key={event.id} className="p-3">
-              { event.attachments != null ? 
-                    (
-                        <Card.Img variant="top" src={event.attachments.url} />
+            (events.length > 0 ? (
+              <div className="container">
+                <div className="upcoming__wrapper">
+                  <span>Upcoming Events</span>
+                </div>
+              {events.map((event) => (
+                <div className="column">
+                <article className="article">
+                  {
+                      isExpiring(event.timestamp) ? (
+                      <div className="ribbon expiration__ribbon">
+                        <p>🕚</p>
+                      </div>
+                    ) : ('')
+                  }
+    
+                  {
+                    event.attachments == null ? (
+                     <div className="no__photo">
+                       <h2>No Photo Available</h2>
+                       <p></p>
+                     </div> 
                     ) : (
-                        // <Card.Img variant="top" src={slugo} />
-                        <div>No image available</div>
+                      <img className="attachment__image" src={event.attachments.url} />
                     )
-              }
-            <Card.Body>
-                <Card.Title>{event.content.substring(0, 15)}</Card.Title>
-                <Card.Text style={{textAlign: "left"}}>
-                    {event.content.substring(0, 200)}
-                </Card.Text>
-              </Card.Body>
-              <Card.Footer>
-                <img style={{marginRight: "10px", height: "50px", width: "50px", borderRadius: "50%", textAlign: "left"}} className='discord-avatar' src={event.author.avatar.image_url} />
-                <small className="text-muted"><br />created at {event.timestamp}</small>
-              </Card.Footer>
-            </Card>
-          ))
-            ) : (
-            'No events to show'
+                  }
+                  <span className="starting__date">Event {getRemainingTime(event.timestamp)}</span>
+                  <h2 className="article__title">{event.content.substring(0, 40)}</h2>
+                  <p className="article__excerpt">{event.content.substring(0, 100)}</p>
+                  <div className="user__info__wrapper">
+                    <div id="avatar">
+                      <img className="avatar__image" src={event.author.avatar.image_url} />
+                    </div>
+                    <div className="info">
+                      <p className="username">{event.author.username}</p>
+                      <p className="date"> {toDateFormat(event.timestamp)} • {readingTime(event.content).text}</p>
+                    </div>
+                  </div>
+                </article>
+                </div>
+              ))}
+             </div>
+               ) : (
+                //  make template event?
+                'No Events To Show'
+               ) 
             )
-          )
         }
-        </CardColumns>
+        </>
     )
 }
 

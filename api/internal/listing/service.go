@@ -81,14 +81,14 @@ func (s *service) GetAllMessages() (*[]Message, rest.Err) {
 func (s *service) GetLatestPinned(channelID string) (*Message, rest.Err) {
 
 	// attempt to get pinned message by channel id from cache
-	result, err := s.c.Get(channelID)
+	// result, err := s.c.Get(channelID)
+	// if err != nil {
+	// if cant get from cache, get from mongo db
+	result, err := s.r.GetLatestPinned(channelID)
 	if err != nil {
-		// if cant get from cache, get from mongo db
-		result, err = s.r.GetLatestPinned(channelID)
-		if err != nil {
-			return nil, err
-		}
+		return nil, err
 	}
+	// }
 
 	return result, nil
 }

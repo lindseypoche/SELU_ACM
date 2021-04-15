@@ -35,7 +35,9 @@ services:
     build:
       context: .
       dockerfile: ./api/cmd/bot/Dockerfile
-    image: acm-selu-bot
+    # check for image in chache first, else build it
+    # if no image then it builds one with the name below
+    image: acm-selu-bot 
     container_name: acm-bot
     links:
       - mongodb
@@ -43,11 +45,6 @@ services:
       - mongodb 
       - redis
     restart: unless-stopped
-    # bind mount. rebuilds on change. 
-    # bind mount is not necessary unless you want live changes.
-    # bot probably needs its own repo in the future
-    # volumes: 
-    #   - ./api  # specify your current dir
     networks:
       - backend
     environment: 
@@ -89,6 +86,7 @@ services:
     build:
       context: .
       dockerfile: ./web/Dockerfile
+    image: acm-selu-web
     container_name: acm-web
     ports:
       - 3000:3000
