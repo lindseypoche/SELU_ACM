@@ -12,7 +12,9 @@ import (
 )
 
 const (
-	defaultHost = "mongodb://0.0.0.0:27017"
+	inDevelopment      = true
+	localDevHost       = "mongodb://127.0.0.1:27017"
+	localContainerHost = "mongodb://0.0.0.0:27017"
 	// defaultHost = `mongodb://acm-mongo:27017`
 )
 
@@ -27,9 +29,15 @@ func GetClient() *mongo.Client {
 		return client
 	}
 
-	uri := os.Getenv("MONGO_HOST")
-	if uri == "" {
-		uri = defaultHost
+	var uri string
+	if inDevelopment {
+		uri = localDevHost
+	} else {
+
+		uri := os.Getenv("MONGO_HOST")
+		if uri == "" {
+			uri = localContainerHost
+		}
 	}
 
 	// h, err := url.Parse(uri)
@@ -43,15 +51,22 @@ func GetClient() *mongo.Client {
 	// 	panic(err)
 	// }
 
+	var clientOptions *options.ClientOptions
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	clientOptions := options.Client().ApplyURI(uri).
-		SetAuth(options.Credential{
-			// AuthSource: "admin",
-			Username: os.Getenv("MONGO_INITDB_ROOT_USERNAME"),
-			Password: os.Getenv("MONGO_INITDB_ROOT_PASSWORD"),
-		})
-
 	defer cancel()
+
+	if !inDevelopment {
+
+		clientOptions = options.Client().ApplyURI(uri).
+			SetAuth(options.Credential{
+				// AuthSource: "admin",
+				Username: os.Getenv("MONGO_INITDB_ROOT_USERNAME"),
+				Password: os.Getenv("MONGO_INITDB_ROOT_PASSWORD"),
+			})
+
+	} else {
+		clientOptions = options.Client().ApplyURI(uri)
+	}
 
 	client, err = mongo.Connect(ctx, clientOptions)
 	if err != nil {

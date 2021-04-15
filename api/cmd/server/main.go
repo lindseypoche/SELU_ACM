@@ -17,7 +17,9 @@ import (
 )
 
 var (
-	defaultHost = "0.0.0.0/8081"
+	// defaultHost  = "0.0.0.0:8081"
+	defaultHost  = "localhost:8081"
+	inProduction = false
 )
 
 func main() {
@@ -42,6 +44,23 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 		Handler:      router,
 	}
+
+	// when testing locally it doesn't make sense to start
+	// HTTPS server, so only do it in production.
+	// In real code, I control this with -production cmd-line flag
+	// if inProduction {
+	// 	m := autocert.Manager{
+	// 		Prompt:     autocert.AcceptTOS,
+	// 		HostPolicy: autocert.HostWhitelist("example1.com", "example2.com"),
+	// 		Cache:      autocert.DirCache("/var/www/.cache"),
+	// 	}
+
+	// 	go func() {
+	// 		log.Fatal(autotls.RunWithManager(router, &m))
+	// 	}()
+	// } else {
+
+	// }
 
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below

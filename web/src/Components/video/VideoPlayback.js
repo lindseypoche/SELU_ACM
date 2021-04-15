@@ -28,7 +28,7 @@ const VideoPlayback = () => {
     )
 }
 
-export default VideoPlayback
+// export default VideoPlayback
 
 
 // var NewComponent = React.createClass({

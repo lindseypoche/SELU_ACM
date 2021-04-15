@@ -13,7 +13,7 @@ class Home extends Component {
       
       <div className="homePage">
 
-        <VideoPlayback />
+        {/* <VideoPlayback /> */}
         <div className="discord-thing">
           <a href="https://discord.gg/g6bQXFMjs3">
             <img src={discord} />
