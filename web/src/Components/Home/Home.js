@@ -10,9 +10,9 @@ import VideoPlayback from '../video/VideoPlayback.js'
 class Home extends Component {
   render() {
     return (
-      
+      <div className = "square">
       <div className="homePage">
-
+        
         {/* <VideoPlayback /> */}
         <div className="discord-thing">
           <a href="https://discord.gg/g6bQXFMjs3">
@@ -21,6 +21,7 @@ class Home extends Component {
         </div>
         <ParallaxContainer />
         
+      </div>
       </div>
     );
   }

@@ -48,6 +48,7 @@ const views = ['day', 'workWeek', 'month'];
 class CalendarApp extends React.Component {
     render() {
         return (
+            <div className = "background">
             <div className="paraCont">
                 <head>
                     <title>DevExtreme Demo</title>
@@ -83,7 +84,7 @@ class CalendarApp extends React.Component {
                     </div>
                 </body>
             </div>
-
+            </div>
 
         );
     }
