@@ -1,70 +1,88 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import ReactMarkdown from 'react-markdown'
 import './SingleEventPage.css';
-import { Sidebar, Nav, Button, Avatar, Image, Box } from 'grommet';
+import { Button, Avatar, Image, Box } from 'grommet';
 import { FaRegComment, FaRegHeart, FaGrinTongueWink } from 'react-icons/fa';
+import {toDateFormat, isExpiring, getRemainingTime} from "../../Utils/timing.js"
 
-class SingleEventPage extends Component {
+const readingTime = require('reading-time');
 
-    render() {
+// class SingleEventPage extends Component {
+const SingleEventPage = ({ match }) => {
+
+    const [event, setEvent] = useState({});
+    const [eventIsLoaded, setEventIsLoaded] = useState(false)
+
+    useEffect(() => {
+        getEvent();
+    }, [])
+
+    const getEvent = () => {
+       axios.get(`http://localhost:8081/api/events/${match.params.id}`)
+           .then(((response) => {  
+               setEvent(response.data);
+               setEventIsLoaded(true);
+          }))
+          .catch(error => console.log(error))
+      }
+
+      if (!eventIsLoaded) {
+        return <div className="App">Loading...</div>;
+      }
+
         return (
-            <div className="page-container">
+            <div className="container">
                 <div className="single-container">
                     <div className="title-container">
-                        <h1>Doing something for some reason coming soon</h1>
+                        <div className="title">
+                            <ReactMarkdown>
+                                {event.content.substring(0, 30)}
+                            </ReactMarkdown>
+                        </div>
                     </div>
                     <div className="details-container">
-                        <Avatar
+                        <Avatar 
+                            src={event.author.avatar.image_url}
                             size="medium"
                             background="lightgray"
-                            margin="small"
+                            margin="xxsmall"
                         >
-                            <FaGrinTongueWink />
                         </Avatar>
                         <Button
                             background="none"
                             color="green"
                             font-size="small"
                             margin="small"
-                        >Ian Porter</Button>
-                        <p className="text-issue">March 26, 2021</p>
+                        >{event.author.username}</Button>
+                        <p className="text-issue">{toDateFormat(event.timestamp)} • {readingTime(event.content).text}</p>
                     </div>
                     <div className="img-container">
                         <Box
-                            height="medium"
-                            width="medium"
+                            width="xxlarge"
                         >
+                            { event.attachments != null ? (
                             <Image
                                 fit="contain"
-                                src="https://via.placeholder.com/150"
-                                fill="horizontal"
-                                size="xxsmall"
+                                src={event.attachments.url}
                             />
+                            ) : (
+                                <div>
+                                    <p>No Image Available</p>
+                                </div>
+                            )
+                            }
                         </Box>
                     </div>
                     <div className="content-container">
-                        <div className="left-side">
-                            <Sidebar
-                                background="brand"
-                                round="small"
-                                width="fit-content"
-                                height="fit-content"
-                                background={{ "color": "#2c2c2c" }}
-                            >
-                                <Nav gap="small">
-
-                                    <Button icon={<FaRegHeart />} hoverIndicator />
-                                    <Button icon={<FaRegComment />} hoverIndicator />
-                                </Nav>
-                            </Sidebar>
-                        </div>
-
                         <div className="body-container">
-                            <p className="font-mgmt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                            <ReactMarkdown>
+                                {event.content}
+                            </ReactMarkdown>
                         </div>
                     </div>
-                </div >
+                </div>
             </div>
         );
-    }
 }
 export default SingleEventPage;
