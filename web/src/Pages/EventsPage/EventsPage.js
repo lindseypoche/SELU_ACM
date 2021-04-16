@@ -1,10 +1,9 @@
-import React, { FC, useState, useEffect } from 'react'
+import { Component } from 'react';
 import axios from 'axios';
 import './EventsPage.css'
 import Events from "../../Components/Events/Events.js"
 
-
-export class EventsPage extends React.Component {
+export class EventsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,21 +25,14 @@ export class EventsPage extends React.Component {
   }
 
   componentDidMount() {
-    // const acmFeaturedChannel = "817106404842143805" // events channel
-    // const acmFeaturedChannel = "814350227544604692" // cakes events channel
+    const eventsChannel = "817106404842143805" 
 
     // fetch latest pin 
-    axios.get("http://localhost:8081/api/pins/channel?id=817106404842143805").then((response) => {
+    axios.get("http://localhost:8081/api/pins/channel?id="+eventsChannel).then((response) => {
       this.setState({ 
         pin: response.data, 
-        // attachments: response.data.attachments,
-        // author: response.data.author,
-        // avatar: response.data.author.avatar,
-        // content: response.data.content,
         pinIsLoaded: true,
        });
-      // console.log("pin: ", this.state.pin);
-      // console.log("attachment: ", this.state.attachment);
     }, 
       (pinError) => {
         this.setState({
@@ -55,7 +47,6 @@ export class EventsPage extends React.Component {
         events: response.data, 
         eventsIsLoaded: true,
        });
-      console.log("events: ", this.state.events);
     }, 
       (eventsError) => {
         this.setState({
@@ -72,8 +63,6 @@ export class EventsPage extends React.Component {
     if (!eventsIsLoaded || !pinIsLoaded) {
       return <div className="App">Loading...</div>;
     }
-
-    // console.log("events have loaded: ", events)
 
     return (
 
