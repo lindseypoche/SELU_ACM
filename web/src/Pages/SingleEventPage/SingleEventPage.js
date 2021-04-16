@@ -31,8 +31,12 @@ const SingleEventPage = ({ match }) => {
         return <div className="App">Loading...</div>;
       }
 
+      console.log("message_reactions.reactions: ", event.message_reactions.reactions)
+
         return (
             <div className="container">
+
+
                 <div className="single-container">
                     <div className="title-container">
                         <div className="title">
@@ -74,6 +78,28 @@ const SingleEventPage = ({ match }) => {
                             }
                         </Box>
                     </div>
+                    
+                    {
+                        (event.message_reactions.count > 0 ?
+                            (
+                                <div className="emoji-container">
+                                    <p className="reaction-title">Reactions</p>
+                                    <div className="sticky">
+                                    {
+                                        (event.message_reactions.reactions.map((reaction => (
+                                            <>
+                                                <span> {reaction.emoji.name} </span>
+                                            </>
+                                        ))))
+                                    }
+                                    </div>
+                                </div>
+                            ) : (
+                                ''
+                            )
+                        )
+                    }
+
                     <div className="content-container">
                         <div className="body-container">
                             <ReactMarkdown>

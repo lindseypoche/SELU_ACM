@@ -41,7 +41,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 }
 
 .content-container {
@@ -61,6 +61,32 @@
     width: 100%;
     height: fit-content;
     text-align: left;
+}
+
+.emoji-container {
+    position: fixed;
+    top: 375px;
+    left: 20px;
+    width: 130px;
+    padding-top: 10px;
+    font-size: 1.3rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.3)
+}
+
+@media (max-width: 1165px) {
+    .emoji-container {
+        position: inherit;
+        width: auto;
+        height: auto; 
+        text-align: right;
+        border: none;
+        padding-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    .reaction-title {
+        display: none
+    }
 }
 
 @media (max-width: 900px) {

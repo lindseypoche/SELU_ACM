@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import {Link} from "react-router-dom"
 import axios from 'axios';
 import './EventsPage.css'
 import Events from "../../Components/Events/Events.js"
@@ -77,7 +78,13 @@ export class EventsPage extends Component {
 
             <img className="featured__image" src={pin.attachments.url} /> 
             <div className="avatar__title__wrapper">
-              <h2 className="featured__title"><img src={pin.author.avatar.image_url}></img>{pin.content.substring(0, 100)} <a href="#">(learn more)</a></h2>
+              <h2 className="featured__title">
+                <img src={pin.author.avatar.image_url}></img>
+                {pin.content.substring(0, 100)} 
+                <Link to={`/event/${pin.id}`}>
+                  <span> learn more</span>
+                </Link>
+              </h2>
             </div>
           </div>
         ) : ('')

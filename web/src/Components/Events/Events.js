@@ -1,9 +1,6 @@
-import ReactMarkdown from 'react-markdown'
 import './Events.css'
-import {
-  Link,
-} from "react-router-dom";
-import {toDateFormat, isExpiring, getRemainingTime} from "../../Utils/timing.js"
+import { Link } from "react-router-dom";
+import { toDateFormat, isExpiring, getRemainingTime } from "../../Utils/timing.js"
 
 const readingTime = require('reading-time');
 
