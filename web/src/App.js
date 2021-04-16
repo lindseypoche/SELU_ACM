@@ -10,6 +10,7 @@ import EventsPage from './Pages/EventsPage/EventsPage.js';
 import Resources from './Pages/Resources/Resources.js';
 import Footer from './Components/Footer/Footer.js';
 import SingleEventPage from './Pages/SingleEventPage/SingleEventPage.js';
+import Archives from './Pages/Archives/archive.js'
 import ScrollToTop from './Components/BackTop/BackTop.js';
 
 function App() {
@@ -25,8 +26,9 @@ function App() {
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />
+          <Route path='/archives' component={Archives} />
         </Switch>
-        
+
         {/* Render components in app*/}
       </BrowserRouter>
       <Footer></Footer>
