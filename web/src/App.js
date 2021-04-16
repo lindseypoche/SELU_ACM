@@ -19,7 +19,7 @@ function App() {
       <BrowserRouter>
         <NavigationBar/>
         <Switch>
-          <Route exact path='/home' component={Home} />
+          <Route exact path={['/', '/home']} component={Home} />
           <Route exact path='/events' component={EventsPage} />
           <Route exact path='/calendar' component={Calendar} />
           <Route exact path='/officers' component={Officers} />
