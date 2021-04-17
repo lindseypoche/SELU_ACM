@@ -62,6 +62,7 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 			},
 			Email: m.Author.Email,
 		},
+		MessageReference: (*blogging.MessageReference)(m.MessageReference),
 	}
 
 	if err := bs.AddMessage(message); err != nil {
