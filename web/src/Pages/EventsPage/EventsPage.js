@@ -91,7 +91,7 @@ export class EventsPage extends Component {
       }
     {
       (!eventsError ? (
-        <Events events={events} />
+        <Events />
       ): (
         <div>No upcomming events</div>
       ))
