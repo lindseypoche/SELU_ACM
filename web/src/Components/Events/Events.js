@@ -1,10 +1,36 @@
 import './Events.css'
 import { Link } from "react-router-dom";
 import { toDateFormat, isExpiring, getRemainingTime } from "../../Utils/timing.js"
+import { useState,useEffect} from 'react';
+import axios from 'axios';
 
 const readingTime = require('reading-time');
 
-const Events = ({ events }) => {
+const Events = () => {
+
+  const [events, setEvent] = useState({});
+  const [eventIsLoaded, setEventIsLoaded] = useState(false)
+  const [avatar, setAvatar] = useState([]); 
+  const [author, setAuthor] = useState([]);
+
+  useEffect(() => {
+      getEvent();
+  }, [])
+
+  const getEvent = () => {
+     axios.get(`http://localhost:8081/api/events`)
+         .then(((response) => {  
+             setEvent(response.data);
+             setEventIsLoaded(true);
+             setAvatar(response.data.author.avatar);
+             setAuthor(response.data.author);
+        }))
+        .catch(error => console.log(error))
+    }
+
+    if (!eventIsLoaded) {
+      return <div className="App">Loading...</div>;
+    }
 
     return (
         <>
@@ -45,10 +71,10 @@ const Events = ({ events }) => {
                         </Link>
                         <div className="user__info__wrapper">
                           <div id="avatar">
-                            <img className="avatar__image" src={event.author.avatar.image_url} />
+                            <img className="avatar__image" src={avatar.image_url} />
                           </div>
                           <div className="info">
-                            <p className="username">{event.author.username}</p>
+                            <p className="username">{author.username}</p>
                             <p className="date"> {toDateFormat(event.timestamp)} • {readingTime(event.content).text}</p>
                           </div>
                         </div>

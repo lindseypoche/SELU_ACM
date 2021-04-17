@@ -12,6 +12,7 @@ import Footer from './Components/Footer/Footer.js';
 import SingleEventPage from './Pages/SingleEventPage/SingleEventPage.js';
 import ScrollToTop from './Components/BackTop/BackTop.js';
 
+
 function App() {
 
   return (
