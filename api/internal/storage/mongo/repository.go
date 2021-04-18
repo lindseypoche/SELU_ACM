@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/commenting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/listing"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/reacting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/errors/rest"
@@ -16,12 +17,14 @@ import (
 const (
 	database = "acm"
 	message  = "messages"
+	comment  = "comments"
 	channel  = "channels"
 	member   = "members"
 )
 
 var (
 	messageCollection = GetClient().Database(database).Collection(message)
+	commentCollection = GetClient().Database(database).Collection(comment)
 	channelCollection = GetClient().Database(database).Collection(channel)
 	memberCollection  = GetClient().Database(database).Collection(member)
 )
@@ -49,7 +52,7 @@ func (repo *ListRepo) GetByID(messageID string) (*listing.Message, rest.Err) {
 
 // GetAll ( current status: ✅ )
 // GetAll gets all messages in the database
-func (repo *ListRepo) GetAll() (*[]listing.Message, rest.Err) {
+func (repo *ListRepo) GetAllMessages() (*[]listing.Message, rest.Err) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -163,7 +166,7 @@ func (repo *ListRepo) GetLatestPinned(channelID string) (*listing.Message, rest.
 	}
 
 	findOptions := options.Find()
-	findOptions.SetSort(map[string]int{"_id": -1})
+	findOptions.SetSort(map[string]int{"timestamp": -1}) // works
 	findOptions.SetLimit(1)
 
 	cursor, err := messageCollection.Find(ctx, filter, findOptions)
@@ -223,6 +226,52 @@ func (repo *ListRepo) GetAllPinnedMessages() (*[]listing.Message, rest.Err) {
 	return &messages, nil
 }
 
+func (r *ListRepo) GetAllComments(msgID string) (*[]listing.Comment, rest.Err) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	findOptions := options.Find()
+	// sort comments by ascending order using timestamp
+	findOptions.SetSort(map[string]int{"timestamp": 1}) // works
+	// findOptions.SetSort(bson.D{{"timestamp", 1}}) // doesn't work
+
+	// filter based on message_reference id
+	filter := bson.M{"message_reference.message_id": msgID}
+
+	cursor, err := commentCollection.Find(ctx, filter, findOptions)
+	if err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error initializing cursor", err)
+	}
+	defer cursor.Close(ctx)
+
+	var comments []listing.Comment
+
+	for cursor.Next(ctx) {
+		var c listing.Comment
+		if err = cursor.Decode(&c); err != nil {
+			// log error
+			return nil, rest.NewInternalServerError("error decoding a comment", err)
+		}
+
+		comments = append(comments, c)
+	}
+
+	// check if there are any errors with cursor
+	if err = cursor.Err(); err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error due to cursor", err)
+	}
+
+	if len(comments) < 1 {
+		// log error
+		return nil, rest.NewNotFoundError("cannot find comments")
+	}
+
+	return &comments, nil
+}
+
 // BlogRepo
 type BlogRepo struct{}
 
@@ -236,9 +285,8 @@ func (r *BlogRepo) SaveMessage(message *blogging.Message) rest.Err {
 	_, err := messageCollection.InsertOne(ctx, *message)
 	if err != nil {
 		// log error
-		return rest.NewInternalServerError("error inserting data", err)
+		return rest.NewInternalServerError("error inserting message", err)
 	}
-
 	return nil
 }
 
@@ -284,11 +332,15 @@ func (r *BlogRepo) DeleteMessage(id string) rest.Err {
 
 	filter := bson.M{"id": id}
 
-	// delete from messages document db
-	_, err := messageCollection.DeleteOne(ctx, filter)
+	// delete from messages collection
+	result, err := messageCollection.DeleteOne(ctx, filter)
 	if err != nil {
 		// log error
 		return rest.NewInternalServerError("error when deleting message", err)
+	}
+
+	if result.DeletedCount == 0 {
+		return rest.NewNotFoundError("error comment not found to delete")
 	}
 
 	return nil
@@ -380,3 +432,74 @@ func (r *ReactRepo) DeleteReaction(mr reacting.MessageReaction) rest.Err {
 
 	return nil
 }
+
+type CommentRepo struct{}
+
+func (r *CommentRepo) SaveComment(comment *commenting.Comment) rest.Err {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := commentCollection.InsertOne(ctx, *comment)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error inserting comment", err)
+	}
+
+	return nil
+}
+
+func (r *CommentRepo) EditComment(comment *commenting.Comment) rest.Err {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// filter by the comment's discord id
+	filter := bson.M{"id": comment.DiscordID}
+	// update all fields except the original timestamp
+	update := bson.M{
+		"$set": bson.M{
+			"content":          comment.Content,
+			"edited_timestamp": comment.EditedTimestamp,
+			// "message_reference": comment.MessageReference,
+		},
+	}
+
+	result, err := commentCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error when attempting to update comment", err)
+	}
+
+	if result.ModifiedCount == 0 {
+		return rest.NewNotFoundError("could not find any matching documents in comments collection to edit")
+	}
+
+	return nil
+}
+
+func (r *CommentRepo) DeleteComment(id string) rest.Err {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+
+	// delete from comments collection
+	result, err := commentCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error when deleting comment", err)
+	}
+
+	if result.DeletedCount == 0 {
+		return rest.NewNotFoundError("could not find any matching documents in comments collection to delete")
+	}
+
+	return nil
+}
+
+// todo: implement
+// func (r *CommentRepo) DeleteAllComments(refID string) rest.Err {
+
+// }
