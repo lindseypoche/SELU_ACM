@@ -56,15 +56,16 @@ type Message struct {
 	Mentions         []*User            `json:"mentions,omitempty" bson:"mentions,omitempty"`
 	IsPinned         bool               `json:"is_pinned" bson:"is_pinned"`
 	MessageReactions MessageReactions   `json:"message_reactions,omitempty" bson:"message_reactions,omitempty"`
-	MessageReference *MessageReference  `json:"message_reference,omitempty" bson:"message_reference,omitempty"`
+	// MessageReference *MessageReference  `json:"message_reference,omitempty" bson:"message_reference,omitempty"`
 }
 
 // MessageReference is a reference (ie a reply) to another message.
-type MessageReference struct {
-	MessageID string `json:"message_id"`
-	ChannelID string `json:"channel_id"`
-	GuildID   string `json:"guild_id,omitempty"`
-}
+// A message should not reference another message, else it would be a comment.
+// type MessageReference struct {
+// 	MessageID string `json:"message_id"`
+// 	ChannelID string `json:"channel_id"`
+// 	GuildID   string `json:"guild_id,omitempty"`
+// }
 
 // Author is a pointer to a User
 type Author struct {
