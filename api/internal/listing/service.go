@@ -12,12 +12,16 @@ type Cache interface {
 
 // Repository provides access to the message storage.
 type Repository interface {
+	// Message repo methods
 	GetByID(string) (*Message, rest.Err)
-	GetAll() (*[]Message, rest.Err)
+	GetAllMessages() (*[]Message, rest.Err)
 	GetByUsername(string) (*[]Message, rest.Err)
 	GetLatestPinned(string) (*Message, rest.Err)
 	GetPinnedMessageByID(string) (*Message, rest.Err)
 	GetAllPinnedMessages() (*[]Message, rest.Err)
+
+	// Comment repo methods
+	GetAllComments(string) (*[]Comment, rest.Err)
 }
 
 // Service provides message listing operations.
@@ -35,6 +39,9 @@ type Service interface {
 	// Get any pinned message with Message ID
 	GetPinnedMessage(string) (*Message, rest.Err)
 	GetAllPinnedMessages() (*[]Message, rest.Err)
+
+	// Get comments by the MessageReference ID
+	GetComments(string) (*[]Comment, rest.Err)
 }
 
 type service struct {
@@ -70,7 +77,7 @@ func (s *service) GetMessagesByUsername(username string) (*[]Message, rest.Err) 
 // GetAllMessages returns all messages
 func (s *service) GetAllMessages() (*[]Message, rest.Err) {
 
-	messages, err := s.r.GetAll()
+	messages, err := s.r.GetAllMessages()
 	if err != nil {
 		return nil, err
 	}
@@ -119,5 +126,15 @@ func (s *service) GetAllPinnedMessages() (*[]Message, rest.Err) {
 	if err != nil {
 		return nil, err
 	}
+	return result, nil
+}
+
+func (s *service) GetComments(refID string) (*[]Comment, rest.Err) {
+
+	result, err := s.r.GetAllComments(refID)
+	if err != nil {
+		return nil, err
+	}
+
 	return result, nil
 }
