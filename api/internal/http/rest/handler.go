@@ -18,7 +18,7 @@ func Handler(l listing.Service) http.Handler {
 	// cors
 	router.Use(cors.New(cors.Config{
 		// AllowedOrigins: []string{"http://web:3000"}, // allow from docker web container
-		AllowedOrigins: []string{"http://localhost:8080"}, // allow all
+		AllowedOrigins: []string{"http://localhost:8080", "http://localhost:8082", "http://localhost:3000"}, // allow all
 		AllowedMethods: []string{"GET"},
 		AllowedHeaders: []string{"Origin"},
 		ExposedHeaders: []string{"Content-Length"},
@@ -37,6 +37,7 @@ func Handler(l listing.Service) http.Handler {
 		events := api.Group("/events")
 		events.GET("", getMessages(l))
 		events.GET("/:message_id", getMessage(l))
+		events.GET("/:message_id/comments", getCommentsByMessageRefID(l))
 
 		// pins
 		pinned := api.Group("/pins")
@@ -118,6 +119,20 @@ func getMessagesByUsername(s listing.Service) func(*gin.Context) {
 		}
 		// c.JSON(http.StatusOK, messages) // old
 		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, messages)
+	}
+}
+
+// Get all comments by the message reference id (event id)
+func getCommentsByMessageRefID(s listing.Service) func(*gin.Context) {
+	return func(c *gin.Context) {
+
+		refID := c.Param("message_id")
+		comments, getErr := s.GetComments(refID)
+		if getErr != nil {
+			http_utils.RespondError(c.Writer, getErr)
+		}
+
+		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, comments)
 	}
 }
 

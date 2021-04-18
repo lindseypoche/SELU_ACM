@@ -5,6 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/commenting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/listing"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/reacting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/storage/mongo"
@@ -21,6 +22,8 @@ var (
 	bs = blogging.NewService(new(mongo.BlogRepo), new(redis.BlogCache))
 	// listing
 	ls = listing.NewService(new(mongo.ListRepo), new(redis.ListCache))
+	// commenting
+	cs = commenting.NewService(new(mongo.CommentRepo))
 	// reacting
 	rs = reacting.NewService(new(mongo.ReactRepo))
 )
@@ -43,6 +46,38 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	// check if MessageReference is not nil.
+	// if not nil then message is referencing another message.
+	// therefore it is recognized as a comment
+	if m.MessageReference != nil {
+		comment := &commenting.Comment{
+			DiscordID: m.ID,
+			ChannelID: m.ChannelID,
+			Content:   m.Content,
+			Timestamp: snowflakeToUnix(m.ID),
+			Author: &commenting.User{
+				ID:            m.Author.ID,
+				Username:      m.Author.Username,
+				Discriminator: m.Author.Discriminator,
+				Avatar: commenting.Avatar{
+					ID:       m.Author.Avatar,
+					ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
+				},
+				Email: m.Author.Email,
+			},
+			MessageReference: &commenting.MessageReference{
+				MessageID: m.MessageReference.MessageID,
+				ChannelID: m.MessageReference.ChannelID,
+			},
+		}
+
+		if err := cs.AddComment(comment); err != nil {
+			log.Println("Unable to save comment")
+		}
+		return
+	}
+
+	// if this is reached, then message is not recognized as a comment.
 	message := &blogging.Message{
 		DiscordID:    m.ID,
 		ChannelID:    m.ChannelID,
@@ -62,7 +97,6 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 			},
 			Email: m.Author.Email,
 		},
-		MessageReference: (*blogging.MessageReference)(m.MessageReference),
 	}
 
 	if err := bs.AddMessage(message); err != nil {
@@ -84,6 +118,24 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		return
 	}
 
+	// COMMENT UPDATES BELOW
+	// check if message_reference is not nil.
+	// if not nil, then the message is recognized as a comment.
+	if m.MessageReference != nil {
+		comment := &commenting.Comment{
+			DiscordID:       m.Message.ID,
+			Content:         m.Message.Content,
+			EditedTimestamp: 0,
+		}
+		err := cs.EditComment(comment)
+		if err != nil {
+			log.Println("error when editing a comment")
+		}
+		log.Println("comment successfully udpated in db")
+		return
+	}
+
+	// MESSAGE UPDATES BELOW
 	// get boolean value of the is_pinned property in db
 	storedMessage, err := ls.GetMessage(m.ID)
 	if err != nil {
@@ -130,11 +182,21 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 // MessageDeleted handles message deleted reactions
 func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
 
+	// attempt to delete message
 	err := bs.DeleteMessage(m.ID, m.ChannelID)
-	if err != nil {
-		log.Println("Unable to delete message: ", err)
+	if err == nil {
+		log.Println("Message successfully deleted")
 		return
 	}
+
+	// attempt to delete comment
+	err = cs.DeleteComment(m.ID)
+	if err != nil {
+		log.Println("Unable to delete comment", err)
+		return
+	}
+
+	log.Println("Comment successfully deleted")
 }
 
 // MessageReactionAdded ( current status: ✅ )
