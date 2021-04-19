@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React,{useState, useEffect} from 'react';
+import "./Comments.css";
 
 
 const Comments = (id) =>{
@@ -27,11 +28,11 @@ const Comments = (id) =>{
         }, []);
 
         return(
-            <div className ="outerWrapper">
+            <div className ="Comments_Wrapper">
+                <span>Comments</span>
                 <div className="Avatar">
                     <div className = "Name">
                         <div className = "CommentBody">
-                            <h2>HI</h2>
                         </div>
                     </div>
                 </div>  
