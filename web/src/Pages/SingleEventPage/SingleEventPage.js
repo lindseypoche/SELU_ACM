@@ -5,6 +5,7 @@ import './SingleEventPage.css';
 import { Button, Avatar, Image, Box } from 'grommet';
 import { FaRegComment, FaRegHeart, FaGrinTongueWink } from 'react-icons/fa';
 import {toDateFormat, isExpiring, getRemainingTime} from "../../Utils/timing.js"
+import Comments from '../../Components/Comments/Comments.js';
 
 const readingTime = require('reading-time');
 
@@ -107,8 +108,14 @@ const SingleEventPage = ({ match }) => {
                             </ReactMarkdown>
                         </div>
                     </div>
+
+                    <div>
+                        <Comments/>
+                    </div>
                 </div>
+
             </div>
+
         );
 }
 export default SingleEventPage;

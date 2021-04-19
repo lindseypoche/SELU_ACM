@@ -27,8 +27,14 @@ const Comments = (id) =>{
         }, []);
 
         return(
-            <div>
-            
+            <div className ="outerWrapper">
+                <div className="Avatar">
+                    <div className = "Name">
+                        <div className = "CommentBody">
+                            <h2>HI</h2>
+                        </div>
+                    </div>
+                </div>  
             </div>
         );
 
