@@ -78,7 +78,7 @@ const SingleEventPage = ({ match }) => {
                             }
                         </Box>
                     </div>
-                    
+
                     {
                         (event.message_reactions.count > 0 ?
                             (
