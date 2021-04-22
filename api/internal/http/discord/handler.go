@@ -3,6 +3,7 @@ package discord
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
@@ -15,7 +16,6 @@ import (
 
 const (
 	discordEpoch int = 1420070400000
-	success          = true
 )
 
 var (
@@ -46,6 +46,15 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// ignore messages from discord pins
 	if m.Type == discordgo.MessageTypeChannelPinnedMessage {
 		return
+	}
+
+	// check for prefix !
+	if strings.HasPrefix(m.Content, Config.Prefix) {
+		if m.Content == "!help" {
+			menu := helpMenu()
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", menu))
+			return
+		}
 	}
 
 	// check if MessageReference is not nil.
@@ -80,6 +89,8 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Validate the created content (start/date, title, body)
+	// this should go below the comment validation because comments
+	// do not need parsed.
 	resp, err := parseMessage(m.Content)
 	if err != nil {
 		// missing content
