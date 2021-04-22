@@ -6,7 +6,7 @@
     border-radius: .75em;
     margin:auto;
     margin-top: 3em;
-    z-index: 100;
+    z-index: 99;
     left:3.5vw;
     position: absolute;
     box-shadow: 0px 0px 3px #4444;

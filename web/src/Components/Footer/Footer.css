@@ -1,6 +1,6 @@
 .footie {
     height: 15rem;
-    
+    z-index: 98;
     background-color:  #2c2c2c;
     position: relative;
     width: 100vw;
