@@ -32,7 +32,7 @@ function App() {
 
         {/* Render components in app*/}
       </BrowserRouter>
-      <Footer></Footer>
+      <Footer/>
       <ScrollToTop />
     </div>
 

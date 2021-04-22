@@ -1,0 +1,15 @@
+.Comments_Wrapper {
+    width: 100%;
+    max-width: 960px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+    text-align: left;
+    color:rgba(0, 0, 0, 0.7);
+    font-size: 0.96rem;
+    font-weight: 500;
+    margin: 0 10px;
+}
+
+.Comments_Wrapper > span {
+    display: inline-block;
+    margin-bottom: 10px;
+}
