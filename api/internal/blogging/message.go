@@ -10,9 +10,14 @@ type Message struct {
 	ChannelID string             `json:"channel_id" bson:"channel_id"`
 
 	// ChannelRefID is the mongo reference id referencing a specific channel
-	ChannelRefID     string             `json:"channel_ref_id" bson:"channel_ref_id"`
-	GuildID          string             `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
-	Content          string             `json:"content" bson:"content"`
+	ChannelRefID string `json:"channel_ref_id" bson:"channel_ref_id"`
+	GuildID      string `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
+
+	// Event fields
+	StartTime int    `json:"start_time" bson:"start_time"`
+	Title     string `json:"title" bson:"title"`
+	Content   string `json:"content" bson:"content"`
+
 	Timestamp        int                `json:"timestamp" bson:"timestamp"`
 	EditedTimestamp  int                `json:"edited_timestamp,omitempty" bson:"edited_timestamp,omitempty"`
 	MentionRoles     []string           `json:"mention_roles,omitempty" bson:"mention_roles,omitempty"`

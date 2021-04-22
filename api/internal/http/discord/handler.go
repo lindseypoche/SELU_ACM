@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
@@ -14,6 +15,7 @@ import (
 
 const (
 	discordEpoch int = 1420070400000
+	success          = true
 )
 
 var (
@@ -77,12 +79,22 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	// Validate the created content (start/date, title, body)
+	resp, err := parseMessage(m.Content)
+	if err != nil {
+		// missing content
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", prettifyJSON(resp)))
+		return
+	}
+
 	// if this is reached, then message is not recognized as a comment.
 	message := &blogging.Message{
 		DiscordID:    m.ID,
 		ChannelID:    m.ChannelID,
 		GuildID:      m.GuildID,
-		Content:      m.Content,
+		StartTime:    resp.Date.Match.i,
+		Title:        resp.Title.Match.s,
+		Content:      resp.Body.Match.s,
 		Timestamp:    snowflakeToUnix(m.ID),
 		MentionRoles: m.MentionRoles,
 		Attachment:   getAttachment(m.Attachments),
@@ -103,6 +115,9 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Println("Unable to save message")
 		return
 	}
+
+	// success
+	s.ChannelMessageSend(m.ChannelID, "Post was successfully created")
 }
 
 // MessageUpdated ( current status: ✅ )
