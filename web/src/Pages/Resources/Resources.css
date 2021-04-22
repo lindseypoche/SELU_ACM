@@ -5,12 +5,12 @@
     height:auto;
     border-radius: .75em;
     margin:auto;
-    position: relative;
+    position: static;
     padding: 3em;
 } 
 
 .resourcesPage{
-    padding-top: 8%;
+    padding-top: 110px;
 }
 
 .image{
