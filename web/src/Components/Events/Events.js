@@ -41,10 +41,10 @@ const Events = () => {
                   <span>Upcoming Events</span>
                 </div>
               {events.map((event) => (
-                    <div className="column">
+                    <div className="column" key={event.id}>
                       <article className="article">
                         {
-                            isExpiring(event.timestamp) ? (
+                            isExpiring(event.start_time) ? (
                             <div className="ribbon expiration__ribbon">
                               <p>🕚</p>
                             </div>
@@ -61,7 +61,7 @@ const Events = () => {
                             <img className="attachment__image" src={event.attachments.url} />
                           )
                         }
-                        <span className="starting__date">Event {getRemainingTime(event.timestamp)}</span>
+                        <span className="starting__date">Event {getRemainingTime(event.start_time)}</span>
                         <h2 className="article__title">{event.content.substring(0, 40)}</h2>
                         <p className="article__excerpt">
                           {/* <ReactMarkdown> */}

@@ -23,6 +23,7 @@ export const isExpiring = (exp_date) => {
 export const getRemainingTime = (start_date) => {
   var format = ""
   var delta = parseInt(start_date) - Date.now()/ 1000
+  console.log("delta: ", delta)
 
   if(delta < 0) {
     return "ended"
@@ -34,7 +35,7 @@ export const getRemainingTime = (start_date) => {
   // calculate and subtract days
   var days = Math.floor(delta / 86400); 
   delta -= days * 86400;
-  if(days < 2) {
+  if(days == 1) {
     format = "starts in " + days + " day"
   } else {
     format = "starts in " + days + " days"
@@ -43,7 +44,7 @@ export const getRemainingTime = (start_date) => {
   // calculate and subtract hours 
   var hours = Math.floor(delta / 3600) % 24;
   delta -= hours * 3600;
-  if(hours < 2) {
+  if(hours == 1) {
     format += " and " + hours + " hour"
   } else {
     format += " and " + hours + " hours"

@@ -14,6 +14,7 @@ export class EventsPage extends Component {
       eventsError: null,
       pin: {
         timestamp: '',
+        start_time: '',
         edited_timestamp: '',
         content: '',
         attachments: {},
