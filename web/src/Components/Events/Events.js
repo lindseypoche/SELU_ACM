@@ -30,8 +30,6 @@ const Events = () => {
       return <div className="App">Loading...</div>;
     }
 
-    console.log("EVENTS>>>", events)
-
     return (
         <>
         {

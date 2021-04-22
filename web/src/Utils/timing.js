@@ -2,9 +2,9 @@
 
 export const toDateFormat = (unix) => {
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
-  var d = new Date(unix * 1000);
+  let d = new Date(unix * 1000);
   var month = months[d.getMonth()];
-  var f = month + " " + d.getDay().toString()
+  var f = month + " " + d.getDate().toString()
   return f
 }
 
@@ -23,13 +23,17 @@ export const isExpiring = (exp_date) => {
 export const getRemainingTime = (start_date) => {
   var format = ""
   var delta = parseInt(start_date) - Date.now()/ 1000
-  console.log("delta: ", delta)
 
-  if(delta < 0) {
-    return "ended"
+  var hours = Math.abs(Math.ceil(delta / 3600) % 24)
+  if(delta <= 0) {
+    if(hours > 1) {
+      return "ended " + hours + " hours ago"
+    }
+    return "is live"
   }
+
   if(delta < 3600) {
-    return "starts in < 1 hour"
+    return "starting soon"
   }
 
   // calculate and subtract days
@@ -42,7 +46,7 @@ export const getRemainingTime = (start_date) => {
   }
 
   // calculate and subtract hours 
-  var hours = Math.floor(delta / 3600) % 24;
+  hours = Math.floor(delta / 3600) % 24;
   delta -= hours * 3600;
   if(hours == 1) {
     format += " and " + hours + " hour"

@@ -92,7 +92,7 @@
 .avatar__image {
     height: 30px;
     width: 30px; 
-    border: 10px;
+    border-radius: 15px;
 }
 
 .attachment__image {

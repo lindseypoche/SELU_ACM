@@ -81,7 +81,7 @@ const SingleEventPage = ({ match }) => {
                         (event.message_reactions.count > 0 ?
                             (
                                 <div className="emoji-container">
-                                    <p className="reaction-title">Reactions</p>
+                                    <p className="reaction-title"></p>
                                     <div className="sticky">
                                     {
                                         (event.message_reactions.reactions.map((reaction => (

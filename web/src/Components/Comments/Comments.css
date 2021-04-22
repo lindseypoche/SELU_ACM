@@ -1,5 +1,5 @@
 .main {
-    margin-top: 100px;
+    margin-top: 70px;
 }
 
 .comments-header {
@@ -25,6 +25,12 @@
 .avatar {
     height: 50px;
     width: 50px;
+    margin: 0;
+    padding: 0;
+}
+
+.avatar img {
+    border-radius: 25px;
 }
 
 .avatar > img {
@@ -35,9 +41,7 @@
     width: 100%;
     text-align: left;
     padding: 0 15px;
-}
-
-.text-wrapper > .username-date-wrapper {
+    font-size: 0.9em;
 }
 
 .text-wrapper .username {
