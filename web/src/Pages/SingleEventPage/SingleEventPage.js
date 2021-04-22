@@ -3,7 +3,6 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown'
 import './SingleEventPage.css';
 import { Button, Avatar, Image, Box } from 'grommet';
-import { FaRegComment, FaRegHeart, FaGrinTongueWink } from 'react-icons/fa';
 import {toDateFormat, isExpiring, getRemainingTime} from "../../Utils/timing.js"
 import Comments from '../../Components/Comments/Comments.js';
 
@@ -31,8 +30,6 @@ const SingleEventPage = ({ match }) => {
       if (!eventIsLoaded) {
         return <div className="App">Loading...</div>;
       }
-
-      console.log("message_reactions.reactions: ", event.message_reactions.reactions)
 
         return (
             <div className="container">
@@ -110,7 +107,7 @@ const SingleEventPage = ({ match }) => {
                     </div>
 
                     <div>
-                        <Comments/>
+                        <Comments eventID={event.id}/>
                     </div>
                 </div>
 
