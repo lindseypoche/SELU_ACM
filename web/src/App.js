@@ -14,6 +14,7 @@ import Archives from './Pages/Archives/Archives.js'
 import ScrollToTop from './Components/BackTop/BackTop.js';
 
 
+
 function App() {
 
   return (
@@ -29,11 +30,13 @@ function App() {
           <Route exact path='/resources' component={Resources} />
           <Route exact path='/archives' component={Archives} />
         </Switch>
-
+        
         {/* Render components in app*/}
       </BrowserRouter>
+      
       <Footer/>
       <ScrollToTop />
+      
     </div>
 
   );

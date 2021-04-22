@@ -9,3 +9,7 @@ import themes from "devextreme/ui/themes";
 themes.initialized(() =>
   ReactDOM.render(<CalendarApp />, document.getElementById("app"))
 );
+
+<div class= "background">
+  
+</div>

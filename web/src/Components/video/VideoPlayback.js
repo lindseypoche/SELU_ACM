@@ -13,6 +13,7 @@ const VideoPlayback = () => {
                     position: "relative",
                     //width: '100vw',
                     // left: '50%',
+                    zIndex: '98',
                     top: '200px',
                     height: '50em',
                     float: 'left',
