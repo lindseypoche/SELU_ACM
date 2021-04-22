@@ -9,7 +9,7 @@ import pao from './ACM Officers/pao.jpg';
 import lauren from './ACM Officers/lauren.jpg';
 import craig from './ACM Officers/craig.jpg';
 import kevin from  './ACM Officers/kevin.jpg';
-import lindsey from './ACM Officers/temp.jpg';
+import lindsey from './ACM Officers/lindsey.jpg';
 
 const OfficerCard = (props) => {
   const cardInfo = [
@@ -29,7 +29,7 @@ const OfficerCard = (props) => {
         <CardTitle className="cTitle" tag="h5">{card.title}</CardTitle>
         <CardSubtitle className="cTitle" tag="h6" className="mb-2 text-muted">{card.subtitle}</CardSubtitle>
         <CardText className="cText">{card.text}</CardText>
-        <Button className="cButton">Read More</Button>
+        
       </CardBody>
     </Card>
     )
