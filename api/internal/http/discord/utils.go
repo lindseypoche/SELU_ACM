@@ -70,7 +70,7 @@ type response struct {
 	DidPost bool `json:"did_post"`
 
 	// response fields
-	Date  *Field `json:"date,omitempty"`
+	Date  *Field `json:"start_time,omitempty"`
 	Title *Field `json:"title,omitempty"`
 	Body  *Field `json:"body,omitempty"`
 }

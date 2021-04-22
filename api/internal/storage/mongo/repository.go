@@ -226,6 +226,50 @@ func (repo *ListRepo) GetAllPinnedMessages() (*[]listing.Message, rest.Err) {
 	return &messages, nil
 }
 
+func (r *ListRepo) GetByStartTime(yesterday int) (*[]listing.Message, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// only get star_time that is less than 24 hours from tomorrow.
+	// ie get all future events and events that have expired for 24 hours.
+	filter := bson.M{"start_time": bson.M{"$gt": yesterday}}
+	findOptions := options.Find()
+	findOptions.SetSort(map[string]int{"start_time": 1})
+
+	cursor, err := messageCollection.Find(ctx, filter, findOptions)
+	if err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error initializing cursor", err)
+	}
+	defer cursor.Close(ctx)
+
+	var messages []listing.Message
+
+	for cursor.Next(ctx) {
+		var m listing.Message
+		if err = cursor.Decode(&m); err != nil {
+			// log error
+			return nil, rest.NewInternalServerError("error decoding a message", err)
+		}
+
+		messages = append(messages, m)
+	}
+
+	// check if there are any errors with cursor
+	if err = cursor.Err(); err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error due to cursor", err)
+	}
+
+	if len(messages) < 1 {
+		// log error
+		return nil, rest.NewNotFoundError("cannot find data")
+	}
+
+	return &messages, nil
+
+}
+
 func (r *ListRepo) GetAllComments(msgID string) (*[]listing.Comment, rest.Err) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

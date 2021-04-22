@@ -88,7 +88,8 @@ func getMessage(s listing.Service) func(*gin.Context) {
 func getMessages(s listing.Service) func(*gin.Context) {
 	return func(c *gin.Context) {
 
-		messages, getErr := s.GetAllMessages()
+		// messages, getErr := s.GetAllMessages() // original get all messages in messages collection
+		messages, getErr := s.GetByStartTime()
 		if getErr != nil {
 			http_utils.RespondError(c.Writer, getErr)
 			return

@@ -1,6 +1,8 @@
 package listing
 
 import (
+	"time"
+
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/errors/rest"
 )
 
@@ -19,6 +21,10 @@ type Repository interface {
 	GetLatestPinned(string) (*Message, rest.Err)
 	GetPinnedMessageByID(string) (*Message, rest.Err)
 	GetAllPinnedMessages() (*[]Message, rest.Err)
+
+	// GetByStartTime sorts messages by the start_time field.
+	// start_time is sorted from soonest to expire to the latest.
+	GetByStartTime(int) (*[]Message, rest.Err)
 
 	// Comment repo methods
 	GetAllComments(string) (*[]Comment, rest.Err)
@@ -39,6 +45,9 @@ type Service interface {
 	// Get any pinned message with Message ID
 	GetPinnedMessage(string) (*Message, rest.Err)
 	GetAllPinnedMessages() (*[]Message, rest.Err)
+
+	// Get non-expired events by the time they start
+	GetByStartTime() (*[]Message, rest.Err)
 
 	// Get comments by the MessageReference ID
 	GetComments(string) (*[]Comment, rest.Err)
@@ -126,6 +135,16 @@ func (s *service) GetAllPinnedMessages() (*[]Message, rest.Err) {
 	if err != nil {
 		return nil, err
 	}
+	return result, nil
+}
+
+func (s *service) GetByStartTime() (*[]Message, rest.Err) {
+
+	result, err := s.r.GetByStartTime(int(time.Now().Local().AddDate(0, 0, -1).Unix()))
+	if err != nil {
+		return nil, err
+	}
+
 	return result, nil
 }
 
