@@ -12,6 +12,7 @@ import Footer from './Components/Footer/Footer.js';
 import SingleEventPage from './Pages/SingleEventPage/SingleEventPage.js';
 import Archives from './Pages/Archives/Archives.js'
 import ScrollToTop from './Components/BackTop/BackTop.js';
+import Membership from './Pages/Membership/Membership';
 
 
 
@@ -29,6 +30,7 @@ function App() {
           <Route exact path='/officers' component={Officers} />
           <Route exact path='/resources' component={Resources} />
           <Route exact path='/archives' component={Archives} />
+          <Route exact path='/membership' component={Membership}/>
         </Switch>
         
         {/* Render components in app*/}

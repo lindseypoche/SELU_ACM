@@ -2,12 +2,7 @@
 .box2,
 .box3,
 .box4,
-.box5,
-.box6,
-.box7,
-.box8,
-.box9,
-.box10 {
+.box5 {
   background-color: #ffffff;
   border-radius: 10px 10px 10px 10px;
   overflow: hidden;
@@ -18,8 +13,8 @@
 }
 
 .box {
-  margin: 20px;
-  width: 10rem;
+  margin: 10px;
+  min-width: 20rem;
   height: 600px;
   background-color: transparent;
   border: 2px;

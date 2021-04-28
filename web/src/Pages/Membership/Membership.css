@@ -1,21 +1,25 @@
-.resourcesPara{
+.membershipPara{
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
     width:80%;
-    height:auto;
+    min-height: 400px;
+    /*height:auto;*/
     border-radius: .75em;
     margin:auto;
     position: static;
     padding: 3em;
 } 
 
-.resourcesPage{
+.membershipPage{
     padding-top: 110px;
     padding-bottom: 15px;
-}
-
-.image{
-    height: auto;
-    width:70%;
     
 }
+
+.square{
+    height: auto;
+    width:25%;
+    margin-left: auto;
+    margin-right: auto;
+}
+

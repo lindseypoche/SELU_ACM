@@ -27,6 +27,7 @@ const NavigationBar = (props) => {
             <Nav.Link className="acm" onClick={()=> history.push("/events")}>Events</Nav.Link>
             <Nav.Link className="acm" onClick={()=> history.push("/resources")}>Resources</Nav.Link>
             <Nav.Link className="acm" onClick={()=> history.push("/calendar")}>Calendar</Nav.Link>
+            <Nav.Link className="acm" onClick={()=>history.push("/membership")}>Membership</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar >
