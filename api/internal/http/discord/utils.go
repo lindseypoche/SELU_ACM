@@ -1,26 +1,28 @@
 package discord
 
 import (
+	"errors"
 	"strconv"
 	"strings"
-
-	"github.com/bwmarrin/discordgo"
-	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
 )
 
-func getAttachment(attachments []*discordgo.MessageAttachment) *blogging.MessageAttachment {
-	if len(attachments) > 0 {
-		return &blogging.MessageAttachment{
-			ID:       attachments[0].ID,
-			URL:      attachments[0].URL,
-			Filename: attachments[0].Filename,
-			Width:    attachments[0].Width,
-			Height:   attachments[0].Height,
-			Size:     attachments[0].Size,
-		}
-	}
-	return nil
-}
+// func getAttachments(attachments []*discordgo.MessageAttachment) []*blogging.MessageAttachment {
+// 	var ats []*blogging.MessageAttachment
+
+// 	for _, attachment := range attachments {
+// 		at := *&blogging.MessageAttachment{}
+// 		ats = append(ats, attachment)
+// 	}
+// 	return &blogging.MessageAttachment{
+// 		ID:       attachments[0].ID,
+// 		URL:      attachments[0].URL,
+// 		Filename: attachments[0].Filename,
+// 		Width:    attachments[0].Width,
+// 		Height:   attachments[0].Height,
+// 		Size:     attachments[0].Size,
+// 	}
+// 	return nil
+// }
 
 // snowflakeToUnix converts snowflake id to a unix
 func snowflakeToUnix(snowflake string) int {
@@ -58,14 +60,14 @@ func before(value string, a string) string {
 }
 
 // Get substring after a string.
-func after(value string, a string) string {
+func after(value string, a string) (string, error) {
 	pos := strings.LastIndex(value, a)
 	if pos == -1 {
-		return ""
+		return "", errors.New("parsing error")
 	}
 	adjustedPos := pos + len(a)
 	if adjustedPos >= len(value) {
-		return ""
+		return "", errors.New("parsing error")
 	}
-	return string(value[adjustedPos])
+	return string(value[adjustedPos:len(value)]), nil
 }

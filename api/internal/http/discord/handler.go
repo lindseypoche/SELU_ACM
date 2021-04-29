@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"unsafe"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
@@ -108,7 +109,7 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Content:      resp.Body.Match.s,
 		Timestamp:    snowflakeToUnix(m.ID),
 		MentionRoles: m.MentionRoles,
-		Attachment:   getAttachment(m.Attachments),
+		Attachments:  *(*[]*blogging.MessageAttachment)(unsafe.Pointer(&m.Attachments)),
 		IsPinned:     m.Pinned,
 		Author: &blogging.User{
 			ID:            m.Author.ID,

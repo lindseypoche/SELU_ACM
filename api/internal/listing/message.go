@@ -52,15 +52,15 @@ type Message struct {
 	Title     string `json:"title" bson:"title"`
 	Content   string `json:"content" bson:"content"`
 
-	Timestamp        int                `json:"timestamp" bson:"timestamp"`
-	EditedTimestamp  int                `json:"edited_timestamp,omitempty" bson:"edited_timestamp,omitempty"`
-	MentionRoles     []string           `json:"mention_roles,omitempty" bson:"mention_roles,omitempty"`
-	Author           *User              `json:"author,omitempty" bson:"author,omitempty"`
-	Attachment       *MessageAttachment `json:"attachments" bson:"attachments,omitempty"`
-	Embed            *MessageEmbed      `json:"embeds,omitempty" bson:"embeds,omitemtpy"`
-	Mentions         []*User            `json:"mentions,omitempty" bson:"mentions,omitempty"`
-	IsPinned         bool               `json:"is_pinned" bson:"is_pinned"`
-	MessageReactions MessageReactions   `json:"message_reactions,omitempty" bson:"message_reactions,omitempty"`
+	Timestamp        int                  `json:"timestamp" bson:"timestamp"`
+	EditedTimestamp  int                  `json:"edited_timestamp,omitempty" bson:"edited_timestamp,omitempty"`
+	MentionRoles     []string             `json:"mention_roles,omitempty" bson:"mention_roles,omitempty"`
+	Author           *User                `json:"author,omitempty" bson:"author,omitempty"`
+	Attachments      []*MessageAttachment `json:"attachments,omitempty" bson:"attachments,omitempty"`
+	Embed            *MessageEmbed        `json:"embeds,omitempty" bson:"embeds,omitemtpy"`
+	Mentions         []*User              `json:"mentions,omitempty" bson:"mentions,omitempty"`
+	IsPinned         bool                 `json:"is_pinned" bson:"is_pinned"`
+	MessageReactions MessageReactions     `json:"message_reactions,omitempty" bson:"message_reactions,omitempty"`
 	// MessageReference *MessageReference  `json:"message_reference,omitempty" bson:"message_reference,omitempty"`
 }
 
@@ -81,6 +81,7 @@ type Author struct {
 type MessageAttachment struct {
 	ID       string `json:"id" bson:"id"`
 	URL      string `json:"url" bson:"url"`
+	ProxyURL string `json:"proxy_url" bson:"proxy_url"`
 	Filename string `json:"filename" bson:"filename"`
 	Width    int    `json:"width" bson:"width"`
 	Height   int    `json:"height" bson:"height"`

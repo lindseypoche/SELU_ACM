@@ -51,7 +51,7 @@ func parseMessage(s string) (*response, error) {
 	resp.DidPost = true // flag for should post
 
 	// parse date
-	re := regexp.MustCompile(`DATE[:\s-]+(.*)[\n+|TITLE]`)
+	re := regexp.MustCompile(`DATE[:\s-/\n]+(.*)[\n+|TITLE]`)
 	match := re.FindStringSubmatch(s)
 	// if there is a match then parse it
 	if len(match) > 1 {
@@ -79,7 +79,7 @@ func parseMessage(s string) (*response, error) {
 	}
 
 	// parse title
-	re = regexp.MustCompile(`TITLE[:\s-]+(.*)[\n+|BODY]`)
+	re = regexp.MustCompile(`TITLE[:\s-/\n]+(.*)[\n+|BODY]`)
 	match = re.FindStringSubmatch(s)
 	if len(match) > 1 {
 
@@ -95,19 +95,18 @@ func parseMessage(s string) (*response, error) {
 		}
 	}
 
-	re = regexp.MustCompile(`BODY[:\s-]+(.*)`)
-	match = re.FindStringSubmatch(s)
-	if len(match) > 1 {
-
-		resp.Body = &Field{
-			Match: &opt{s: match[1]},
+	body, err := after(s, "BODY:")
+	if err != nil || body == "" {
+		resp.DidPost = false
+		resp.Title = &Field{
+			Err:   errors.New("parsing_error").Error(),
+			Cause: "possible missing or misspelled BODY field",
 		}
 	} else {
-
-		resp.DidPost = false
+		body = strings.TrimSpace(body)
+		strings.TrimPrefix(body, ":")
 		resp.Body = &Field{
-			Err:   errors.New("parsing_error").Error(),
-			Cause: "possible misspelled BODY field",
+			Match: &opt{s: body},
 		}
 	}
 
