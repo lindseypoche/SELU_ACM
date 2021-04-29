@@ -13,7 +13,7 @@ import ACM from '../image/association-for-computing-machinery-logo.png'
 class Footer extends Component {
     render() {
         return(
-            <div class= "footie">
+            <div class= "footie" style={{marginTop:'100vh'}}>
                 <br></br>
                 <br></br>
                 <div class = "Column1">
