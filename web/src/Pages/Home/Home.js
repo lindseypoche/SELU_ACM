@@ -19,7 +19,7 @@ class Home extends Component {
           </a>
         </div>
         <ParallaxContainer />
-        
+        <div className="takeUpSpace"></div>
       </div>
     );
   }

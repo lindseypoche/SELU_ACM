@@ -19,10 +19,13 @@ class Home extends Component {
             <img src={discord} />
           </a>
         </div>
+        
         <ParallaxContainer />
         
       </div>
+      <div className="takeUpSpace"></div>
       </div>
+      
     );
   }
 }

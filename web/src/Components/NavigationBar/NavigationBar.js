@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import acmlogo from '../../Media/Images/association-for-computing-machinery-logo.png';
+import acmlogo from '../../Media/Images/Icons/association-for-computing-machinery-logo.png';
 import { Nav, Navbar} from "react-bootstrap";
 import {
   BrowserRouter as Router,
