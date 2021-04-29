@@ -1,7 +1,8 @@
 .homePage{
-    margin-top: 4rem;
+    margin-top: 6rem;
     margin-bottom: 4rem;
     z-index: 98;
+    height: fit-content;
 }    
 
 .caro{
