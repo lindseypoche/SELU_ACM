@@ -1,11 +1,17 @@
 .homePage{
-    padding-top: 100px;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
     z-index: 98;
 }    
 
 .caro{
     width: 80%;
     justify-content: center;
+}
+
+.paraHome {
+    height: 25rem;
+    width: 100%;
 }
 
 img {

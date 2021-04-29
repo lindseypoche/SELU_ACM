@@ -1,7 +1,7 @@
 .officersPara{
     background-color: rgba(230, 230, 230, 0.89);
     display: block;
-    width:90%;
+    width:80%;
     height:auto;
     border-radius: .75em;
     margin:auto;
@@ -10,8 +10,10 @@
 } 
 
 .officersPage{
-    padding-top: 120px;
+    padding-top: 5rem;
     padding-bottom: 15px;
+    margin-top: 8rem;
+    margin-bottom: 4rem;
 }
 
 .grid{
