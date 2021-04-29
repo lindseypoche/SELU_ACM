@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown'
 import './SingleEventPage.css';
-import { Button, Avatar, Image, Box } from 'grommet';
+import { Button, Avatar, Image, Box, Carousel } from 'grommet';
 import {toDateFormat, isExpiring, getRemainingTime} from "../../Utils/timing.js"
 import Comments from '../../Components/Comments/Comments.js';
 
@@ -60,20 +60,28 @@ const SingleEventPage = ({ match }) => {
                         <p className="text-issue">{toDateFormat(event.timestamp)} • {readingTime(event.content).text}</p>
                     </div>
                     <div className="img-container">
-                        <Box
-                            width="xxlarge"
+                        <Box 
+                            // width="xxlarge"
+                            height="medium"
+                            // width="xxxlarge"
+                            overflow="hidden"
                         >
-                            { event.attachments != null ? (
-                            <Image
-                                fit="contain"
-                                src={event.attachments.url}
-                            />
+
+                        <Carousel fill="false" play="5000" controls="">
+                        {/* <Carousel fill="true" play="5000" controls="false"> */}
+                            { 
+                            event.attachments.length > 0 ? (
+                                event.attachments.map((attachment, i) => (
+                                    // <Image key={i} fit="cover" src={attachment.url} />
+                                    <Image key={i} src={attachment.url} />
+                                ))
                             ) : (
                                 <div>
                                     <p>No Image Available</p>
                                 </div>
                             )
                             }
+                            </Carousel>
                         </Box>
                     </div>
 

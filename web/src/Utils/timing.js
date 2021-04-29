@@ -26,6 +26,7 @@ export const getRemainingTime = (start_date) => {
 
   var hours = Math.abs(Math.ceil(delta / 3600) % 24)
   if(delta <= 0) {
+    // event stays live for 2 hours 
     if(hours > 1) {
       return "ended " + hours + " hours ago"
     }

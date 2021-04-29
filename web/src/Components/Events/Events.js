@@ -10,8 +10,8 @@ const readingTime = require('reading-time');
 const Events = () => {
 
   const [events, setEvents] = useState([])
-
   const [eventsIsLoaded, setEventsIsLoaded] = useState(false)
+  const [eventsErr, setEventsErr] = useState(false)
 
   useEffect(() => {
       getEvents();
@@ -23,12 +23,20 @@ const Events = () => {
              setEvents(response.data);
              setEventsIsLoaded(true);
         }))
-        .catch(error => console.log(error))
+        .catch(error => {
+          setEventsErr(true)
+        })
     }
 
     if (!eventsIsLoaded) {
       return <div className="App">Loading...</div>;
     }
+
+    if (eventsErr) {
+      return <div>error getting events</div>
+    }
+
+    console.log("events: ", events)
 
     return (
         <>
@@ -50,21 +58,19 @@ const Events = () => {
                         }
                         <Link to={`/event/${event.id}`} style={{color: "inherit", textDecoration: "none"}} >
                         {
-                          event.attachments == null ? (
+                          event.attachments.length > 0 ? (
+                           <img className="attachment__image" src={event.attachments[0].url} />
+                          ) : (
                            <div className="no__photo">
                              <h2>No Photo Available</h2>
                              <p></p>
                            </div> 
-                          ) : (
-                            <img className="attachment__image" src={event.attachments.url} />
                           )
                         }
                         <span className="starting__date">Event {getRemainingTime(event.start_time)}</span>
-                        <h2 className="article__title">{event.content.substring(0, 40)}</h2>
+                        <h2 className="article__title">{event.title}</h2>
                         <p className="article__excerpt">
-                          {/* <ReactMarkdown> */}
-                            {event.content.substring(0, 100)}
-                          {/* </ReactMarkdown> */}
+                            {event.content.substring(0, 170)}
                         </p>
                         </Link>
                         <div className="user__info__wrapper">

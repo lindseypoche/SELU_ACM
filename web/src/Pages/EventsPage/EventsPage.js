@@ -14,10 +14,11 @@ export class EventsPage extends Component {
       eventsError: null,
       pin: {
         timestamp: '',
-        start_time: '',
         edited_timestamp: '',
+        start_time: '',
+        title: '',
         content: '',
-        attachments: {},
+        attachments: [],
         author: {
           avatar: {}
         },
@@ -44,26 +45,12 @@ export class EventsPage extends Component {
       }
     );
 
-    // featch all active events
-    axios.get('http://localhost:8081/api/events').then((response) => {
-      this.setState({ 
-        events: response.data, 
-        eventsIsLoaded: true,
-       });
-    }, 
-      (eventsError) => {
-        this.setState({
-          eventsError: true
-        });
-      }
-    );
-
   }
 
   render() {
     const { eventsError, eventsIsLoaded, events, pinError, pinIsLoaded, pin } = this.state; 
 
-    if (!eventsIsLoaded || !pinIsLoaded) {
+    if (!pinIsLoaded) {
       return <div className="App">Loading...</div>;
     }
 
@@ -78,11 +65,11 @@ export class EventsPage extends Component {
               <p>📍</p>
             </div>
 
-            <img className="featured__image" src={pin.attachments.url} /> 
+            <img className="featured__image" src={pin.attachments[0].url} /> 
             <div className="avatar__title__wrapper">
               <h2 className="featured__title">
                 <img src={pin.author.avatar.image_url}></img>
-                {pin.content.substring(0, 100)} 
+                {pin.title} 
                 <Link to={`/event/${pin.id}`}>
                   <span> learn more</span>
                 </Link>
@@ -91,13 +78,8 @@ export class EventsPage extends Component {
           </div>
         ) : ('')
       }
-    {
-      (!eventsError ? (
-        <Events />
-      ): (
-        <div>No upcomming events</div>
-      ))
-    }       
+
+      <Events />
 
     </div>
     )

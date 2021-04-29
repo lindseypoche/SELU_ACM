@@ -21,7 +21,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <NavigationBar/>
+      <NavigationBar />
         <Switch>
           <Route exact path={['/', '/home']} component={Home} />
           <Route path={`/event/:id`} exact strict component={SingleEventPage} />
