@@ -13,4 +13,12 @@
     padding: 3em;
     height: auto;
     /* border:1px solid black; */
+    font-family: Arial, Helvetica, Arial, sans-serif;
+}
+.deta{
+    border-radius: .75em;
+    padding-right: 15em;
+    padding-left: 15em;
+    padding-top: 2em;
+    font-family: Arial, Helvetica, Arial, sans-serif;
 }
