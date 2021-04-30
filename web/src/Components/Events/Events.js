@@ -58,13 +58,15 @@ const Events = () => {
                         }
                         <Link to={`/event/${event.id}`} style={{color: "inherit", textDecoration: "none"}} >
                         {
-                          event.attachments.length > 0 ? (
-                           <img className="attachment__image" src={event.attachments[0].url} />
-                          ) : (
+                          event.attachments == null ? (
                            <div className="no__photo">
                              <h2>No Photo Available</h2>
                              <p></p>
                            </div> 
+                          ) : (
+
+                           <img className="attachment__image" src={event.attachments[0].url} />
+
                           )
                         }
                         <span className="starting__date">Event {getRemainingTime(event.start_time)}</span>

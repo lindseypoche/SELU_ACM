@@ -70,6 +70,7 @@ const SingleEventPage = ({ match }) => {
                         <Carousel fill="false" play="5000" controls="">
                         {/* <Carousel fill="true" play="5000" controls="false"> */}
                             { 
+                            event.attachments != null ? (
                             event.attachments.length > 0 ? (
                                 event.attachments.map((attachment, i) => (
                                     // <Image key={i} fit="cover" src={attachment.url} />
@@ -80,6 +81,11 @@ const SingleEventPage = ({ match }) => {
                                     <p>No Image Available</p>
                                 </div>
                             )
+                            ) : (
+                                <> 
+                                </>
+                            )
+
                             }
                             </Carousel>
                         </Box>
