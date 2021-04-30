@@ -38,7 +38,7 @@ class ParallaxContainer extends Component {
                 <br></br>
                 <br></br>
                 <h1>Southeastern's ACM</h1>
-                <h5>ACM brings together students in the Computer Science department, giving them the oppurtunites they need to connect them with industry leaders, secure internships, meet new friends, and stay successful in their journey though coding developement. We host bi-weekly meetingswhich include pizza, resume workshops, code workshops, and much more.At our Distinguished Lecturer series we invite guests from local Businessesand professional groups that work with Southeastern Alumni to start their careers and offer interships for those not ready to graduate. We also host an Annual Crawfish boil in the Spring semester!</h5>
+                <h5>ACM brings together students in the Computer Science department, giving them the oppurtunites they need to connect them with industry leaders, secure internships, meet new friends, and stay successful in their journey though coding developement. We host bi-weekly meetings which include pizza, resume workshops, code workshops, and much more. At our Distinguished Lecturer series, we invite guests from local Businesses and professional groups that work with Southeastern Alumni to start their careers and offer internships for those not ready to graduate. We also host an Annual Crawfish boil in the Spring semester!</h5>
             
                 <br></br>
                 <br></br>
