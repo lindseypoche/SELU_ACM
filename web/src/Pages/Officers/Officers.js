@@ -12,6 +12,9 @@ class Officers extends Component {
                         <OfficerCard />
                     </div>
                 </div>
+                <div>
+                    
+                </div>
             </div>
         )
     }
