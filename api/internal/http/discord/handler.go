@@ -281,12 +281,12 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	}
 
 	// ignore if users are replying to non-event content
-	if _, getErr := ls.GetMessage(m.MessageReference.MessageID); getErr == nil {
-		return
-	}
-
-	// anyone can update their comment
 	if m.MessageReference != nil {
+		if _, getErr := ls.GetMessage(m.MessageReference.MessageID); getErr == nil {
+			return
+		}
+
+		// anyone can update their comment
 		comment := &commenting.Comment{
 			DiscordID:       m.Message.ID,
 			Content:         m.Message.Content,
@@ -327,10 +327,20 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		return
 	}
 
+	// Validate the created content (start/date, title, body)
+	resp, e := parseMessage(m.Content)
+	if e != nil {
+		// missing content
+		// s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", prettifyJSON(resp)))
+		return
+	}
+
 	// if isPinned was not changed, edit the message
 	message := &blogging.Message{
 		DiscordID:       m.Message.ID,
-		Content:         m.Message.Content,
+		StartTime:       resp.Date.Match.i,
+		Title:           resp.Title.Match.s,
+		Content:         resp.Body.Match.s,
 		EditedTimestamp: 0,
 	}
 
@@ -340,6 +350,7 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		return
 	}
 	log.Println("message successfully edited")
+	s.ChannelMessageSend(m.ChannelID, "Message edited successfully.")
 }
 
 // MessageDeleted ( current status: ✅ )
@@ -487,11 +498,14 @@ func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 	}
 
 	// Save users acm roles
-	var hasAccess bool
+	var hasAccess, isOfficer bool
 	var saveUserRoles []subscribing.Role
 	for _, role := range *acmRoles {
 		for _, r := range m.Roles {
 			if role.DiscordID == r {
+				if role.Name == "acm_officer" || role.Name == "acm_admin" {
+					isOfficer = true
+				}
 				saveUserRoles = append(saveUserRoles, subscribing.Role{
 					ID:        role.ID,
 					DiscordID: role.DiscordID,
@@ -526,8 +540,9 @@ func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 				ImageURL: "https:cdn.discordapp.com/avatars/" + m.User.ID + "/" + m.User.Avatar + ".png",
 			},
 		},
-		Roles:   &saveUserRoles,
-		Content: &subscribing.Content{},
+		IsOfficer: isOfficer,
+		Roles:     &saveUserRoles,
+		Content:   &subscribing.Content{},
 	})
 	if updateErr == nil {
 		log.Println("Member was successfully updated")
@@ -550,7 +565,8 @@ func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 				ImageURL: "https:cdn.discordapp.com/avatars/" + m.User.ID + "/" + m.User.Avatar + ".png",
 			},
 		},
-		Roles: &saveUserRoles,
+		IsOfficer: isOfficer,
+		Roles:     &saveUserRoles,
 	})
 	if saveErr != nil {
 		log.Println(saveErr.GetMessage())

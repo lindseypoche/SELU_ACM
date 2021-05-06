@@ -34,12 +34,11 @@ const SingleEventPage = ({ match }) => {
         return (
             <div className="container">
 
-
                 <div className="single-container">
                     <div className="title-container">
                         <div className="title">
                             <ReactMarkdown>
-                                {event.content.substring(0, 30)}
+                                {event.title}
                             </ReactMarkdown>
                         </div>
                     </div>
@@ -60,35 +59,30 @@ const SingleEventPage = ({ match }) => {
                         <p className="text-issue">{toDateFormat(event.timestamp)} • {readingTime(event.content).text}</p>
                     </div>
                     <div className="img-container">
+                        { 
+                        event.attachments != null ? (
                         <Box 
                             // width="xxlarge"
                             height="medium"
                             // width="xxxlarge"
                             overflow="hidden"
                         >
-
+                        {
+                        event.attachments.length > 1 ? (
                         <Carousel fill="false" play="5000" controls="">
-                        {/* <Carousel fill="true" play="5000" controls="false"> */}
-                            { 
-                            event.attachments != null ? (
-                            event.attachments.length > 0 ? (
+                            {
                                 event.attachments.map((attachment, i) => (
-                                    // <Image key={i} fit="cover" src={attachment.url} />
                                     <Image key={i} src={attachment.url} />
                                 ))
-                            ) : (
-                                <div>
-                                    <p>No Image Available</p>
-                                </div>
-                            )
-                            ) : (
-                                <> 
-                                </>
-                            )
-
                             }
-                            </Carousel>
+                        </Carousel>
+                        ) : (
+                            <Image src={event.attachments[0].url} />
+                        )
+                        }
                         </Box>
+                        ) : (<></>)
+                        }
                     </div>
 
                     {

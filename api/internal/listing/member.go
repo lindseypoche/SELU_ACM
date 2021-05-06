@@ -25,6 +25,8 @@ type Member struct {
 
 	// MemberRole is the roles of a member
 	Roles *[]Role `json:"roles,omitempty" bson:"roles,omitempty"`
+
+	IsOfficer bool `json:"is_officer,omitempty" bson:"is_officer,omitempty"`
 }
 
 // Avatar data of a user's discord avatar

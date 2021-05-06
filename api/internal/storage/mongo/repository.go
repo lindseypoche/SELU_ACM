@@ -335,7 +335,8 @@ func (r *ListRepo) GetAllOfficers() (*[]listing.Member, rest.Err) {
 
 	for cursor.Next(ctx) {
 		var m listing.Member
-		if err = cursor.Decode(&m); err != nil {
+		err = cursor.Decode(&m)
+		if err != nil {
 			// log error
 			return nil, rest.NewInternalServerError("error decoding a member", err)
 		}
@@ -344,7 +345,8 @@ func (r *ListRepo) GetAllOfficers() (*[]listing.Member, rest.Err) {
 	}
 
 	// check if there are any errors with cursor
-	if err = cursor.Err(); err != nil {
+	err = cursor.Err()
+	if err != nil {
 		// log error
 		return nil, rest.NewInternalServerError("error due to cursor", err)
 	}
@@ -359,42 +361,47 @@ func (r *ListRepo) GetAllOfficers() (*[]listing.Member, rest.Err) {
 
 func (r *ListRepo) GetActiveOfficers() (*[]listing.Member, rest.Err) {
 
-	return nil, nil
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	// filter := bson.M{"roles": authorUsername}
+	filter := bson.M{
+		"is_officer": bson.M{
+			"$eq": true,
+		},
+	}
 
-	// cursor, err := messageCollection.Find(ctx, filter, options.Find().SetSort(map[string]int{"timestamp": 1}))
-	// if err != nil {
-	// 	return nil, rest.NewInternalServerError("error initializing cursor", err)
-	// }
-	// defer cursor.Close(ctx)
+	cursor, err := memberCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, rest.NewInternalServerError("error initializing cursor", err)
+	}
+	defer cursor.Close(ctx)
 
-	// messages := []listing.Message{}
-	// // loop through cursor and store in []messages
-	// for cursor.Next(ctx) {
-	// 	var message listing.Message
+	members := []listing.Member{}
+	// loop through cursor and store in []members
+	for cursor.Next(ctx) {
+		var member listing.Member
 
-	// 	if err = cursor.Decode(&message); err != nil {
-	// 		// log error
-	// 		return nil, rest.NewInternalServerError("error decoding data into message", err)
-	// 	}
-	// 	messages = append(messages, message)
-	// }
+		err = cursor.Decode(&member)
+		if err != nil {
+			// log error
+			return nil, rest.NewInternalServerError("error decoding data into member", err)
+		}
+		members = append(members, member)
+	}
 
-	// // check if there are any errors with cursor
-	// if err := cursor.Err(); err != nil {
-	// 	// log error
-	// 	restErr := rest.NewInternalServerError("error due to cursor", err)
-	// 	return nil, restErr
-	// }
+	// check if there are any errors with cursor
+	err = cursor.Err()
+	if err != nil {
+		// log error
+		restErr := rest.NewInternalServerError("error due to cursor", err)
+		return nil, restErr
+	}
 
-	// if len(messages) < 1 {
-	// 	// log error
-	// 	return nil, rest.NewNotFoundError("no messages found")
-	// }
-	// return &messages, nil
+	if len(members) < 1 {
+		// log error
+		return nil, rest.NewNotFoundError("no members found")
+	}
+	return &members, nil
 }
 
 func (r *ListRepo) GetUserRoles(id string) (*[]listing.Role, rest.Err) {
@@ -761,10 +768,11 @@ func (r *SubscribeRepo) UpdateMember(member *subscribing.Member) rest.Err {
 
 	update := bson.M{
 		"$set": bson.M{
-			"nick":    member.Nick,
-			"user":    member.User,
-			"roles":   member.Roles,
-			"content": member.Content,
+			"nick":       member.Nick,
+			"user":       member.User,
+			"roles":      member.Roles,
+			"content":    member.Content,
+			"is_officer": member.IsOfficer,
 		},
 	}
 

@@ -33,7 +33,8 @@ type Member struct {
 	Roles *[]Role `json:"roles,omitempty" bson:"roles,omitempty"`
 
 	// Officer content
-	Content *Content `json:"content,omitempty" bson:"content,omitempty"`
+	IsOfficer bool     `json:"is_officer,omitempty" bson:"is_officer,omitempty"`
+	Content   *Content `json:"content,omitempty" bson:"content,omitempty"`
 }
 
 type Content struct {

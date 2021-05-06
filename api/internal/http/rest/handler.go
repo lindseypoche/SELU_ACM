@@ -32,6 +32,8 @@ func Handler(l listing.Service) http.Handler {
 	// api routes
 	api := router.Group("/api")
 	api.GET("", getTestAPI())
+	// officers
+	api.GET("/officers", getActiveOfficers(l))
 	{
 		// events
 		events := api.Group("/events")
@@ -41,7 +43,7 @@ func Handler(l listing.Service) http.Handler {
 
 		// pins
 		pinned := api.Group("/pins")
-		pinned.GET("", getPinnedMessages(l))
+		// pinned.GET("", getPinnedMessages(l))
 		pinned.GET("/message", getPinnedMessage(l))
 		pinned.GET("/channel", getLatestPinnedMessage(l))
 		// pinned.GET("/all_latest", getAllLatestPinnedMessage(l)) // ie latest from all channels
@@ -50,9 +52,6 @@ func Handler(l listing.Service) http.Handler {
 		author := api.Group("/author")
 		author.GET("/:username/events", getMessagesByUsername(l)) //api/author/quantacake/events
 
-		// officers / members
-		member := api.Group("/member")
-		member.GET("", getOfficers(l))
 	}
 
 	return router
@@ -169,16 +168,16 @@ func getPinnedMessage(s listing.Service) func(*gin.Context) {
 }
 
 // get all pinned messages
-func getPinnedMessages(s listing.Service) func(*gin.Context) {
+func getActiveOfficers(s listing.Service) func(*gin.Context) {
 	return func(c *gin.Context) {
 
-		messages, getErr := s.GetAllPinnedMessages()
+		officers, getErr := s.GetActiveOfficers()
 		if getErr != nil {
 			http_utils.RespondError(c.Writer, getErr)
 			return
 		}
 		// c.JSON(http.StatusOK, messages)
-		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, messages)
+		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, officers)
 	}
 }
 
@@ -227,16 +226,17 @@ func getAllLatestPinnedMessage(s listing.Service) func(*gin.Context) {
 }
 
 // GetAll gets all messages
-func getOfficers(s listing.Service) func(*gin.Context) {
+func blah(s listing.Service) func(*gin.Context) {
 	return func(c *gin.Context) {
 
-		// messages, getErr := s.GetAllMessages() // original get all messages in messages collection
-		officers, getErr := s.GetAllOfficers()
-		if getErr != nil {
-			http_utils.RespondError(c.Writer, getErr)
-			return
-		}
-		// c.JSON(http.StatusOK, messages)
-		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, officers)
+		c.String(http.StatusOK, "getOfficers!")
+
+		// officers, getErr := s.GetActiveOfficers()
+		// if getErr != nil {
+		// 	http_utils.RespondError(c.Writer, getErr)
+		// 	return
+		// }
+		// // c.JSON(http.StatusOK, messages)
+		// http_utils.RespondJson(c.Writer, "GET", http.StatusOK, officers)
 	}
 }

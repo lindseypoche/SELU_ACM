@@ -3,7 +3,6 @@ import {Link} from "react-router-dom"
 import axios from 'axios';
 import './EventsPage.css'
 import Events from "../../Components/Events/Events.js";
-import Footer from '../../Components/Footer/Footer';
 
 export class EventsPage extends Component {
   constructor(props) {
