@@ -19,6 +19,7 @@ const OfficerCard = (props) => {
     {image: craig, title: "Craig Canepa", subtitle: "Secretary", text: "Craig Canepa is a junior Information Technology major. He is currently a tutor with the Computer Science Department. After receiving his Bachelor's degree, he hopes to get a job. Outside of academics, his interests are playing video games, watching movies, and playing with his pets."},
     {image: lindsey, title: "Lindsey Poche", subtitle: "Treasurer", text: "Lindsey Poche is a Senior Computer Science Major. She is currently a tutor with the Computer Science Department at Southeastern Louisiana University. Along with being the Treasurer for the Association for Computing Machinery, she is also the Treasurer for the American Welding Society at Southeastern Louisiana University. Outside of school, she enjoys swimming and knitting."},
     ];
+    
   
   const renderCard = (card, index) => {
     return (
