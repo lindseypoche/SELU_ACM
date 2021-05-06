@@ -31,6 +31,15 @@ type Member struct {
 	// but currently is not.
 	// Roles map[primitive.ObjectID]IsActive `json:"roles,omitempty" bson:"roles,omitempty"`
 	Roles *[]Role `json:"roles,omitempty" bson:"roles,omitempty"`
+
+	// Officer content
+	Content *Content `json:"content,omitempty" bson:"content,omitempty"`
+}
+
+type Content struct {
+	Chair string `json:"position" bson:"position"`
+	Text  string `json:"text" bson:"text"`
+	Photo string `json:"photo" bson:"photo"`
 }
 
 // Avatar data of a user's discord avatar

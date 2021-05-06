@@ -1,16 +1,14 @@
 package blogging
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
 )
 
 // *** Message has its own document ***
 // A Message stores all data related to a specific Discord message.
 type Message struct {
-	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	DiscordID string             `json:"id" bson:"id"`
-	ChannelID string             `json:"channel_id" bson:"channel_id"`
+	DiscordID string `json:"id" bson:"id"`
+	ChannelID string `json:"channel_id" bson:"channel_id"`
 
 	// ChannelRefID is the mongo reference id referencing a specific channel
 	ChannelRefID bson.ObjectId `json:"channel_ref_id" bson:"channel_ref_id"`
@@ -54,8 +52,7 @@ type User struct {
 // A Member stores user information for Guild members. A guild
 // member represents a certain user's presence in a guild.
 type Member struct {
-	ID      primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	GuildID string             `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
+	GuildID string `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
 
 	// JoinedAt is a unix timestamp
 	JoinedAt int     `json:"joined_at" bson:"joined_at"`

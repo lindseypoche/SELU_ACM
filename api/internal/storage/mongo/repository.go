@@ -466,6 +466,20 @@ func (r *ListRepo) GetAllRoles() (*[]listing.Role, rest.Err) {
 	return &roles, nil
 }
 
+func (r *ListRepo) GetChannel(id string) (*listing.Channel, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	channel := &listing.Channel{}
+	result := channelCollection.FindOne(ctx, bson.M{"id": id})
+
+	err := result.Decode(channel)
+	if err != nil {
+		return nil, rest.NewInternalServerError("error decoding channel", err)
+	}
+	return channel, nil
+}
+
 // BlogRepo
 type BlogRepo struct{}
 
@@ -747,9 +761,10 @@ func (r *SubscribeRepo) UpdateMember(member *subscribing.Member) rest.Err {
 
 	update := bson.M{
 		"$set": bson.M{
-			"nick":  member.Nick,
-			"user":  member.User,
-			"roles": member.Roles,
+			"nick":    member.Nick,
+			"user":    member.User,
+			"roles":   member.Roles,
+			"content": member.Content,
 		},
 	}
 
@@ -761,6 +776,56 @@ func (r *SubscribeRepo) UpdateMember(member *subscribing.Member) rest.Err {
 
 	if result.ModifiedCount == 0 {
 		return rest.NewNotFoundError("error member not found")
+	}
+
+	return nil
+}
+
+func (r *SubscribeRepo) UpdateOfficerContent(member *subscribing.Member, id string) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user.id": id}
+
+	update := bson.M{
+		"$set": bson.M{
+			"content": member.Content,
+		},
+	}
+
+	result, err := memberCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error updating officer content", err)
+	}
+
+	if result.ModifiedCount == 0 {
+		return rest.NewNotFoundError("error officer not found")
+	}
+
+	return nil
+}
+
+func (r *SubscribeRepo) DeleteOfficerContent(id string) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user.id": id}
+
+	update := bson.M{
+		"$unset": bson.M{
+			"content": "",
+		},
+	}
+
+	result, err := memberCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error deleting officer content", err)
+	}
+
+	if result.ModifiedCount == 0 {
+		return rest.NewNotFoundError("error officer not found")
 	}
 
 	return nil
@@ -792,16 +857,6 @@ type ArchitectRepo struct{}
 
 // DO NOT USE.
 func (r *ArchitectRepo) SaveRole(role *architecting.Role) rest.Err {
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// defer cancel()
-
-	// _, err := roleCollection.InsertOne(ctx, *role)
-	// if err != nil {
-	// 	// log error
-	// 	return rest.NewInternalServerError("error inserting role", err)
-	// }
-	// return nil
-
 	return nil
 }
 

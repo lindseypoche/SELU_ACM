@@ -7,11 +7,12 @@ import (
 )
 
 type me struct {
-	authorID  string
-	stateID   string
-	channelID string
-	isBot     bool
-	roles     *[]listing.Role
+	authorID    string
+	stateID     string
+	channelID   string
+	channelName string
+	isBot       bool
+	roles       *[]listing.Role
 
 	// access level. 0-3
 	accessLvl uint8
@@ -37,8 +38,9 @@ func Validate(v *me) (uint8, bool) {
 	// if channelID is empty, then channelID is not necessary and
 	// channel validation should be skipped.
 	if v.channelID != "" {
-		for _, channel := range Config.Channels {
-			if channel == v.channelID {
+		for channelName, channelId := range Config.Channels {
+			if channelId == v.channelID {
+				v.channelName = channelName
 				v.isAuthorized = true
 			}
 		}

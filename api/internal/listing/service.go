@@ -40,6 +40,9 @@ type Repository interface {
 	// Roles
 	GetUserRoles(string) (*[]Role, rest.Err)
 	GetAllRoles() (*[]Role, rest.Err)
+
+	// Channel
+	GetChannel(id string) (*Channel, rest.Err)
 }
 
 // Service provides message listing operations.
@@ -73,6 +76,9 @@ type Service interface {
 	// Get roles
 	GetUserRoles(string) (*[]Role, rest.Err)
 	GetAllRoles() (*[]Role, rest.Err)
+
+	// Get channel
+	GetChannel(id string) (*Channel, rest.Err)
 }
 
 type service struct {
@@ -209,6 +215,15 @@ func (s *service) GetUserRoles(id string) (*[]Role, rest.Err) {
 
 func (s *service) GetAllRoles() (*[]Role, rest.Err) {
 	result, err := s.r.GetAllRoles()
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *service) GetChannel(id string) (*Channel, rest.Err) {
+	result, err := s.r.GetChannel(id)
 	if err != nil {
 		return nil, err
 	}

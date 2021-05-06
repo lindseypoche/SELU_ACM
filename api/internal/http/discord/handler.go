@@ -54,18 +54,39 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// validation
-	accessLvl, ok := Validate(&me{
+	user := me{
 		authorID:  m.Author.ID,
 		stateID:   s.State.User.ID,
 		channelID: m.ChannelID,
 		isBot:     m.Author.Bot,
 		roles:     userRoles,
-	})
+	}
+	accessLvl, ok := Validate(&user)
 	// if !ok then bot or unauthorized channel.
 	if !ok {
 		return
 	}
 
+	// *** store officer info
+	if accessLvl > 1 && user.channelName == "officers" {
+		var photo string
+		if m.Attachments != nil || len(m.Attachments) > 0 {
+			photo = m.Attachments[0].URL
+		}
+
+		ss.UpdateOfficerContent(&subscribing.Member{
+			Content: &subscribing.Content{
+				Chair: "Paoist",
+				Text:  m.Content,
+				Photo: photo,
+			},
+		}, m.Author.ID)
+		return
+	} else if accessLvl < 2 && user.channelName == "officers" {
+		return
+	}
+
+	// *** store events info
 	// return menu
 	if m.Content == "!help" {
 		menu := helpMenu()
@@ -158,55 +179,62 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// admin access
-	// if accessLvl > 2 {
+	if accessLvl > 2 {
 
-	// 	// save channel
-	// 	if strings.Trim(m.Content, " ") == "!acm save channel events" {
-	// 		st, err := s.Channel(m.ChannelID)
-	// 		if err != nil {
-	// 			s.ChannelMessageSend(m.ChannelID, "Unable to retreive channel properties.")
-	// 			return
-	// 		}
+		// save channel
+		if strings.Trim(m.Content, " ") == "!acm save channel events" {
+			st, err := s.Channel(m.ChannelID)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "Unable to retreive channel properties.")
+				return
+			}
 
-	// 		// Create channel
-	// 		restErr := as.CreateChannel(&architecting.Channel{
-	// 			DiscordID:  st.ID,
-	// 			GuildID:    st.GuildID,
-	// 			Name:       st.Name,
-	// 			Topic:      st.Topic,
-	// 			Collection: "events",
-	// 		})
-	// 		if restErr != nil {
-	// 			s.ChannelMessageSend(m.ChannelID, "Unable to save channel")
-	// 			return
-	// 		}
+			// Check if channel already exists with "events" name and the channel id.
+			channel, restErr := ls.GetChannel(m.ChannelID)
+			if restErr != nil || channel == nil {
+				log.Println(restErr.GetMessage())
+				return
+			}
 
-	// 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Channel %s saved successfully.", st.Name))
-	// 	}
+			// Create channel
+			restErr = as.CreateChannel(&architecting.Channel{
+				DiscordID:  st.ID,
+				GuildID:    st.GuildID,
+				Name:       st.Name,
+				Topic:      st.Topic,
+				Collection: "events",
+			})
+			if restErr != nil {
+				s.ChannelMessageSend(m.ChannelID, "Unable to save channel")
+				return
+			}
 
-	// 	if strings.Trim(m.Content, " ") == "!acm save channel officers" {
-	// 		st, err := s.Channel(m.ChannelID)
-	// 		if err != nil {
-	// 			s.ChannelMessageSend(m.ChannelID, "Unable to retreive channel properties.")
-	// 			return
-	// 		}
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Channel %s saved successfully.", st.Name))
+		}
 
-	// 		// Create channel
-	// 		restErr := as.CreateChannel(&architecting.Channel{
-	// 			DiscordID:  st.ID,
-	// 			GuildID:    st.GuildID,
-	// 			Name:       st.Name,
-	// 			Topic:      st.Topic,
-	// 			Collection: "officers",
-	// 		})
-	// 		if restErr != nil {
-	// 			s.ChannelMessageSend(m.ChannelID, "Unable to save channel")
-	// 			return
-	// 		}
-	// 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Channel %s saved successfully.", st.Name))
-	// 		return
-	// 	}
-	// }
+		if strings.Trim(m.Content, " ") == "!acm save channel officers" {
+			st, err := s.Channel(m.ChannelID)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "Unable to retreive channel properties.")
+				return
+			}
+
+			// Create channel
+			restErr := as.CreateChannel(&architecting.Channel{
+				DiscordID:  st.ID,
+				GuildID:    st.GuildID,
+				Name:       st.Name,
+				Topic:      st.Topic,
+				Collection: "officers",
+			})
+			if restErr != nil {
+				s.ChannelMessageSend(m.ChannelID, "Unable to save channel")
+				return
+			}
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Channel %s saved successfully.", st.Name))
+			return
+		}
+	}
 }
 
 // MessageUpdated ( current status: ✅ )
@@ -220,22 +248,30 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	userRoles, _ := ls.GetUserRoles(m.Author.ID)
 
 	// validation
-	accessLvl, ok := Validate(&me{
+	user := me{
 		authorID:  m.Author.ID,
 		stateID:   s.State.User.ID,
 		channelID: m.ChannelID,
 		isBot:     m.Author.Bot,
 		roles:     userRoles,
-	})
+	}
+	accessLvl, ok := Validate(&user)
+	// if !ok then bot or unauthorized channel.
 	if !ok {
-		log.Println("not authorized")
 		return
 	}
 
-	// return menu
-	if m.Content == "!help" {
-		menu := helpMenu()
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", menu))
+	// *** store officer info
+	if accessLvl > 1 && user.channelName == "officers" {
+		ss.UpdateOfficerContent(&subscribing.Member{
+			Content: &subscribing.Content{
+				Chair: "Paoist",
+				Text:  m.Content,
+				Photo: m.Attachments[0].URL,
+			},
+		}, m.Author.ID)
+		return
+	} else if accessLvl < 2 && user.channelName == "officers" {
 		return
 	}
 
@@ -309,6 +345,26 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 // MessageDeleted ( current status: ✅ )
 // MessageDeleted handles message deleted reactions
 func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
+
+	// validation
+	user := me{
+		authorID:  s.State.User.ID,
+		stateID:   s.State.User.ID,
+		channelID: m.ChannelID,
+		isBot:     false,
+	}
+	_, ok := Validate(&user)
+	// if !ok then bot or unauthorized channel.
+	if !ok {
+		return
+	}
+
+	// *** store officer info
+	log.Println("channel: ", m.ChannelID)
+	if user.channelName == "officers" {
+		ss.DeleteOfficerContent(user.authorID)
+		return
+	}
 
 	// attempt to delete message
 	err := bs.DeleteMessage(m.ID, m.ChannelID)
@@ -419,23 +475,6 @@ func GuildRoleUpdated(s *discordgo.Session, m *discordgo.GuildRoleUpdate) {
 	log.Println("role successfully updated")
 }
 
-func GuildRoleDeleted(s *discordgo.Session, m *discordgo.GuildRoleDelete) {
-
-	err := as.DeleteRole(m.RoleID)
-	if err != nil {
-		log.Println(err.GetMessage())
-		return
-	}
-
-	log.Println("role successfully deleted")
-}
-
-// ChannelDeleted handles channel deleted events.
-func ChannelDeleted(s *discordgo.Session, c *discordgo.ChannelDelete) {}
-
-// ChannelUpdated handles channel update events.
-func ChannelUpdated(s *discordgo.Session, c *discordgo.ChannelUpdate) {}
-
 // GuildMemberUpdate updates existing members and saves new members but
 // only when a new member's role is updated.
 func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
@@ -487,7 +526,8 @@ func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 				ImageURL: "https:cdn.discordapp.com/avatars/" + m.User.ID + "/" + m.User.Avatar + ".png",
 			},
 		},
-		Roles: &saveUserRoles,
+		Roles:   &saveUserRoles,
+		Content: &subscribing.Content{},
 	})
 	if updateErr == nil {
 		log.Println("Member was successfully updated")
@@ -518,3 +558,20 @@ func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
 	}
 
 }
+
+func GuildRoleDeleted(s *discordgo.Session, m *discordgo.GuildRoleDelete) {
+
+	err := as.DeleteRole(m.RoleID)
+	if err != nil {
+		log.Println(err.GetMessage())
+		return
+	}
+
+	log.Println("role successfully deleted")
+}
+
+// ChannelDeleted handles channel deleted events.
+func ChannelDeleted(s *discordgo.Session, c *discordgo.ChannelDelete) {}
+
+// ChannelUpdated handles channel update events.
+func ChannelUpdated(s *discordgo.Session, c *discordgo.ChannelUpdate) {}
