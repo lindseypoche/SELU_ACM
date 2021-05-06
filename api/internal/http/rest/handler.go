@@ -51,6 +51,8 @@ func Handler(l listing.Service) http.Handler {
 		author.GET("/:username/events", getMessagesByUsername(l)) //api/author/quantacake/events
 
 		// officers / members
+		member := api.Group("/member")
+		member.GET("", getOfficers(l))
 	}
 
 	return router
@@ -221,5 +223,20 @@ func getAllLatestPinnedMessage(s listing.Service) func(*gin.Context) {
 
 		// c.JSON(http.StatusOK, featured)
 		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, allFeatured)
+	}
+}
+
+// GetAll gets all messages
+func getOfficers(s listing.Service) func(*gin.Context) {
+	return func(c *gin.Context) {
+
+		// messages, getErr := s.GetAllMessages() // original get all messages in messages collection
+		officers, getErr := s.GetAllOfficers()
+		if getErr != nil {
+			http_utils.RespondError(c.Writer, getErr)
+			return
+		}
+		// c.JSON(http.StatusOK, messages)
+		http_utils.RespondJson(c.Writer, "GET", http.StatusOK, officers)
 	}
 }

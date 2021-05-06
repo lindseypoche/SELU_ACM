@@ -1,6 +1,8 @@
-package listing
+package subscribing
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
+
+type IsActive bool
 
 // A User stores all data for an individual Discord user.
 type User struct {
@@ -15,7 +17,7 @@ type User struct {
 // A Member stores user information for Guild members. A guild
 // member represents a certain user's presence in a guild.
 type Member struct {
-	ID      primitive.ObjectID `json:"_id" bson:"_id"`
+	ID      primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	GuildID string             `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
 
 	// JoinedAt is a unix timestamp
@@ -23,7 +25,11 @@ type Member struct {
 	Nick     string `json:"nick" bson:"nick"`
 	User     *User  `json:"user" bson:"user"`
 
-	// MemberRole is the roles of a member
+	// Roles uses the roles primitive.ObjectID in the roles collection
+	// to check if the user is currently active in that role.
+	// If IsActive == false, then user was affiliated with the role in the past,
+	// but currently is not.
+	// Roles map[primitive.ObjectID]IsActive `json:"roles,omitempty" bson:"roles,omitempty"`
 	Roles *[]Role `json:"roles,omitempty" bson:"roles,omitempty"`
 }
 

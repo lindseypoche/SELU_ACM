@@ -2,6 +2,7 @@ package date_utils
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -42,4 +43,13 @@ func ToUnixTimestamp(timestamp string) string {
 		return fmt.Sprintf("%v", t.Unix())
 	}
 	return timestamp
+}
+
+func DiscordTimestampToInt(timestamp string) int {
+	t, err := strconv.Atoi(timestamp)
+	if err != nil {
+		return GetNowUnix()
+	}
+
+	return t
 }

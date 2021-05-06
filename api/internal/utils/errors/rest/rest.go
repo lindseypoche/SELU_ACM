@@ -113,3 +113,10 @@ func NewStatusNotImplemented(message string) Err {
 		Error:   "not_implemented",
 	}
 }
+
+func NewBotCommandError(message string) Err {
+	return restErr{
+		Message: message,
+		Error:   "bot_command_error",
+	}
+}

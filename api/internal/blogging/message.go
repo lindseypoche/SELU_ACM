@@ -1,6 +1,9 @@
 package blogging
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"gopkg.in/mgo.v2/bson"
+)
 
 // *** Message has its own document ***
 // A Message stores all data related to a specific Discord message.
@@ -10,8 +13,12 @@ type Message struct {
 	ChannelID string             `json:"channel_id" bson:"channel_id"`
 
 	// ChannelRefID is the mongo reference id referencing a specific channel
-	ChannelRefID string `json:"channel_ref_id" bson:"channel_ref_id"`
-	GuildID      string `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
+	ChannelRefID bson.ObjectId `json:"channel_ref_id" bson:"channel_ref_id"`
+
+	// MemberRefID is the mongo reference id referencing a member
+	MemberRefID bson.ObjectId `json:"member_ref_id" bson:"member_ref_id"`
+
+	GuildID string `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
 
 	// Event fields
 	StartTime int    `json:"start_time" bson:"start_time"`
@@ -51,10 +58,10 @@ type Member struct {
 	GuildID string             `json:"guild_id,omitempty" bson:"guild_id,omitempty"`
 
 	// JoinedAt is a unix timestamp
-	JoinedAt int    `json:"joined_at" bson:"joined_at"`
-	Nick     string `json:"nick" bson:"nick"`
-	User     *User  `json:"user" bson:"user"`
-	Roles    []Role `json:"roles,omitempty" bson:"roles,omitempty"`
+	JoinedAt int     `json:"joined_at" bson:"joined_at"`
+	Nick     string  `json:"nick" bson:"nick"`
+	User     *User   `json:"user" bson:"user"`
+	Roles    *[]Role `json:"roles,omitempty" bson:"roles,omitempty"`
 
 	// OfficerStatus includes: active, inactive, nil
 	OfficerStatus string `json:"officer_status,omitempty" bson:"officer_status,omitempty"`

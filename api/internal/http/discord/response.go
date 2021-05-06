@@ -64,7 +64,6 @@ func parseMessage(s string) (*response, error) {
 				Cause: "possible date formatting error",
 			}
 		} else {
-
 			resp.Date = &Field{
 				Match: &opt{i: ts},
 			}
@@ -140,28 +139,6 @@ func parseTime(entry string) (int, error) {
 
 	// return timestamp
 	return int(dt.Unix()), nil
-}
-
-// temporary help menu
-func helpMenu() string {
-	return `md
-		>>> 
-		**Post**:
-		_Post example_:
-		DATE: 01/02/2006 3:04 PM -0500 CDT
-		TITLE: ACM Game Night!
-		BODY: The acm is having a game night next month ... 
-
-		_Allowed_:
-		- attachments (images)
-		- roles (@acm, @officer, ...)
-
-		**Comments**: 
-		Replying to a post will display it has a comment on the web page.
-
-		**Emojis**: 
-		Adding an emoji to a post will display it on the web page. 
-		`
 }
 
 // ***Menu is the interface for a bot menu***

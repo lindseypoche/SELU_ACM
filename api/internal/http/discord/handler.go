@@ -7,12 +7,15 @@ import (
 	"unsafe"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/architecting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/commenting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/listing"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/reacting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/storage/mongo"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/storage/redis"
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/subscribing"
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/date_utils"
 )
 
 const (
@@ -29,38 +32,61 @@ var (
 	cs = commenting.NewService(new(mongo.CommentRepo))
 	// reacting
 	rs = reacting.NewService(new(mongo.ReactRepo))
+	// subscribing
+	ss = subscribing.NewService(new(mongo.SubscribeRepo))
+	// architecting
+	as = architecting.NewService(new(mongo.ArchitectRepo))
 )
 
 // MessageCreated ( current status: ✅ )
-// MessageCreated handles messages created (WORKING)
+// MessageCreated handles messages created
 func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-	if ok := Validate(s, m.Message); !ok {
-		return
-	}
-
-	// validate user is not bot
-	if m.Author.ID == s.State.User.ID || m.Author.Bot {
-		return
-	}
 
 	// ignore messages from discord pins
 	if m.Type == discordgo.MessageTypeChannelPinnedMessage {
 		return
 	}
 
-	// check for prefix !
-	if strings.HasPrefix(m.Content, Config.Prefix) {
-		if m.Content == "!help" {
-			menu := helpMenu()
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", menu))
+	userRoles, getErr := ls.GetUserRoles(m.Author.ID)
+	if getErr != nil {
+		userRoles = nil
+		log.Println("user (bot?) has no saved roles")
+	}
+
+	// validation
+	accessLvl, ok := Validate(&me{
+		authorID:  m.Author.ID,
+		stateID:   s.State.User.ID,
+		channelID: m.ChannelID,
+		isBot:     m.Author.Bot,
+		roles:     userRoles,
+	})
+	// if !ok then bot or unauthorized channel.
+	if !ok {
+		return
+	}
+
+	// return menu
+	if m.Content == "!help" {
+		menu := helpMenu()
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", menu))
+		return
+	}
+
+	// ignore all < 2 access levels that are not referencing a post.
+	if accessLvl < 2 && m.MessageReference == nil {
+		return
+	}
+
+	// ignore if users are replying to non-event content
+	if m.MessageReference != nil {
+		_, getErr := ls.GetMessage(m.MessageReference.MessageID)
+		if getErr != nil {
 			return
 		}
 	}
 
-	// check if MessageReference is not nil.
-	// if not nil then message is referencing another message.
-	// therefore it is recognized as a comment
+	// save all user comments
 	if m.MessageReference != nil {
 		comment := &commenting.Comment{
 			DiscordID: m.ID,
@@ -89,65 +115,141 @@ func MessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// Validate the created content (start/date, title, body)
-	// this should go below the comment validation because comments
-	// do not need parsed.
-	resp, err := parseMessage(m.Content)
-	if err != nil {
-		// missing content
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", prettifyJSON(resp)))
-		return
-	}
+	// officer / admin event creation
+	if accessLvl > 1 && m.MessageReference == nil {
 
-	// if this is reached, then message is not recognized as a comment.
-	message := &blogging.Message{
-		DiscordID:    m.ID,
-		ChannelID:    m.ChannelID,
-		GuildID:      m.GuildID,
-		StartTime:    resp.Date.Match.i,
-		Title:        resp.Title.Match.s,
-		Content:      resp.Body.Match.s,
-		Timestamp:    snowflakeToUnix(m.ID),
-		MentionRoles: m.MentionRoles,
-		Attachments:  *(*[]*blogging.MessageAttachment)(unsafe.Pointer(&m.Attachments)),
-		IsPinned:     m.Pinned,
-		Author: &blogging.User{
-			ID:            m.Author.ID,
-			Username:      m.Author.Username,
-			Discriminator: m.Author.Discriminator,
-			Avatar: blogging.Avatar{
-				ID:       m.Author.Avatar,
-				ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
+		// Validate the created content (start/date, title, body)
+		resp, err := parseMessage(m.Content)
+		if err != nil {
+			// missing content
+			// s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", prettifyJSON(resp)))
+			return
+		}
+
+		message := &blogging.Message{
+			DiscordID:    m.ID,
+			ChannelID:    m.ChannelID,
+			GuildID:      m.GuildID,
+			StartTime:    resp.Date.Match.i,
+			Title:        resp.Title.Match.s,
+			Content:      resp.Body.Match.s,
+			Timestamp:    snowflakeToUnix(m.ID),
+			MentionRoles: m.MentionRoles,
+			Attachments:  *(*[]*blogging.MessageAttachment)(unsafe.Pointer(&m.Attachments)),
+			IsPinned:     m.Pinned,
+			Author: &blogging.User{
+				ID:            m.Author.ID,
+				Username:      m.Author.Username,
+				Discriminator: m.Author.Discriminator,
+				Avatar: blogging.Avatar{
+					ID:       m.Author.Avatar,
+					ImageURL: "https:cdn.discordapp.com/avatars/" + m.Author.ID + "/" + m.Author.Avatar + ".png",
+				},
+				Email: m.Author.Email,
 			},
-			Email: m.Author.Email,
-		},
+		}
+
+		if err := bs.AddMessage(message); err != nil {
+			log.Println("Unable to save message")
+			return
+		}
+
+		s.ChannelMessageSend(m.ChannelID, "Post was successfully created")
 	}
 
-	if err := bs.AddMessage(message); err != nil {
-		log.Println("Unable to save message")
-		return
-	}
+	// admin access
+	// if accessLvl > 2 {
 
-	// success
-	s.ChannelMessageSend(m.ChannelID, "Post was successfully created")
+	// 	// save channel
+	// 	if strings.Trim(m.Content, " ") == "!acm save channel events" {
+	// 		st, err := s.Channel(m.ChannelID)
+	// 		if err != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, "Unable to retreive channel properties.")
+	// 			return
+	// 		}
+
+	// 		// Create channel
+	// 		restErr := as.CreateChannel(&architecting.Channel{
+	// 			DiscordID:  st.ID,
+	// 			GuildID:    st.GuildID,
+	// 			Name:       st.Name,
+	// 			Topic:      st.Topic,
+	// 			Collection: "events",
+	// 		})
+	// 		if restErr != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, "Unable to save channel")
+	// 			return
+	// 		}
+
+	// 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Channel %s saved successfully.", st.Name))
+	// 	}
+
+	// 	if strings.Trim(m.Content, " ") == "!acm save channel officers" {
+	// 		st, err := s.Channel(m.ChannelID)
+	// 		if err != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, "Unable to retreive channel properties.")
+	// 			return
+	// 		}
+
+	// 		// Create channel
+	// 		restErr := as.CreateChannel(&architecting.Channel{
+	// 			DiscordID:  st.ID,
+	// 			GuildID:    st.GuildID,
+	// 			Name:       st.Name,
+	// 			Topic:      st.Topic,
+	// 			Collection: "officers",
+	// 		})
+	// 		if restErr != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, "Unable to save channel")
+	// 			return
+	// 		}
+	// 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Channel %s saved successfully.", st.Name))
+	// 		return
+	// 	}
+	// }
 }
 
 // MessageUpdated ( current status: ✅ )
 func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 
-	// TODO: add channel validation (user validation not needed)
-	if ok := Validate(s, m.Message); !ok {
+	// ignore messages from discord pins
+	if m.Type == discordgo.MessageTypeChannelPinnedMessage {
 		return
 	}
 
-	// validate user is not bot
-	if m.Author.ID == s.State.User.ID || m.Author.Bot {
+	userRoles, _ := ls.GetUserRoles(m.Author.ID)
+
+	// validation
+	accessLvl, ok := Validate(&me{
+		authorID:  m.Author.ID,
+		stateID:   s.State.User.ID,
+		channelID: m.ChannelID,
+		isBot:     m.Author.Bot,
+		roles:     userRoles,
+	})
+	if !ok {
+		log.Println("not authorized")
 		return
 	}
 
-	// COMMENT UPDATES BELOW
-	// check if message_reference is not nil.
-	// if not nil, then the message is recognized as a comment.
+	// return menu
+	if m.Content == "!help" {
+		menu := helpMenu()
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s", menu))
+		return
+	}
+
+	// ignore all < 2 access levels that are not referencing a post.
+	if accessLvl < 2 && m.MessageReference == nil {
+		return
+	}
+
+	// ignore if users are replying to non-event content
+	if _, getErr := ls.GetMessage(m.MessageReference.MessageID); getErr == nil {
+		return
+	}
+
+	// anyone can update their comment
 	if m.MessageReference != nil {
 		comment := &commenting.Comment{
 			DiscordID:       m.Message.ID,
@@ -162,7 +264,6 @@ func MessageUpdated(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		return
 	}
 
-	// MESSAGE UPDATES BELOW
 	// get boolean value of the is_pinned property in db
 	storedMessage, err := ls.GetMessage(m.ID)
 	if err != nil {
@@ -230,6 +331,8 @@ func MessageDeleted(s *discordgo.Session, m *discordgo.MessageDelete) {
 // MessageReactionAdded handles reactions added to a message
 func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 
+	// no validation, anyone can add an emoji.
+
 	reaction := reacting.MessageReaction{
 		UserID:    r.UserID,
 		MessageID: r.MessageID,
@@ -249,6 +352,8 @@ func MessageReactionAdded(s *discordgo.Session, r *discordgo.MessageReactionAdd)
 // MessageReactionRemoved handles reactions removed
 func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRemove) {
 
+	// no validation, anyone can remove their emoji
+
 	// reaction := mongo.Emoji{}
 	reaction := reacting.MessageReaction{
 		UserID:    r.UserID,
@@ -264,32 +369,152 @@ func MessageReactionRemoved(s *discordgo.Session, r *discordgo.MessageReactionRe
 	}
 }
 
-// https://discord.com/developers/docs/rich-presence/how-to
-func PresenceUpdated(s *discordgo.Session, m *discordgo.PresenceUpdate) {
+// GuildMemberRemoved handles guild members who were removed or left.
+func GuildMemberRemoved(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
+
+	// check user's roles for access
+	userRoles, restErr := ls.GetUserRoles(m.User.ID)
+	if restErr != nil {
+		log.Println(restErr.GetMessage())
+		return
+	}
+
+	// validation
+	if accessLvl, ok := Validate(&me{
+		authorID: m.User.ID,
+		stateID:  s.State.User.ID,
+		isBot:    m.User.Bot,
+		roles:    userRoles,
+	}); !ok || accessLvl < 1 {
+		return
+	}
+
+	err := ss.DeleteMember(m.User.ID)
+	if err != nil {
+		log.Println(err.GetMessage())
+	}
 }
 
-func ChannelCreated(s *discordgo.Session, c *discordgo.ChannelCreate) {}
+// BROKEN
+// GuildRoleUpdated handles updated events but also creates new roles if
+// they don't already exist.
+func GuildRoleUpdated(s *discordgo.Session, m *discordgo.GuildRoleUpdate) {
 
-func ChannelUpdated(s *discordgo.Session, c *discordgo.ChannelUpdate) {}
+	// ignore roles that dont contain "acm"
+	if !strings.Contains(m.GuildRole.Role.Name, "acm") {
+		return
+	}
 
+	role := architecting.Role{
+		DiscordID: m.GuildRole.Role.ID,
+		Name:      m.GuildRole.Role.Name,
+	}
+
+	err := as.UpdateRole(&role)
+	if err != nil {
+		log.Println(err.GetMessage())
+		return
+	}
+
+	log.Println("role successfully updated")
+}
+
+func GuildRoleDeleted(s *discordgo.Session, m *discordgo.GuildRoleDelete) {
+
+	err := as.DeleteRole(m.RoleID)
+	if err != nil {
+		log.Println(err.GetMessage())
+		return
+	}
+
+	log.Println("role successfully deleted")
+}
+
+// ChannelDeleted handles channel deleted events.
 func ChannelDeleted(s *discordgo.Session, c *discordgo.ChannelDelete) {}
 
-// GuildMemberAdded handles new guild members
-func GuildMemberAdded(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
-}
+// ChannelUpdated handles channel update events.
+func ChannelUpdated(s *discordgo.Session, c *discordgo.ChannelUpdate) {}
 
-// GuildMemberRemoved handles guild members who were removed or left
-func GuildMemberRemoved(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
-}
-
-// GuildMemberUpdated handles updated guild members
+// GuildMemberUpdate updates existing members and saves new members but
+// only when a new member's role is updated.
 func GuildMemberUpdated(s *discordgo.Session, m *discordgo.GuildMemberUpdate) {
-}
 
-// GuildRoleUpdated handles updated roles
-func GuildRoleUpdated(s *discordgo.Session, m *discordgo.GuildRoleUpdate) {
-}
+	// Get all acm roles to check against users roles
+	acmRoles, err := ls.GetAllRoles()
+	if err != nil {
+		log.Println(err.GetMessage())
+		return
+	}
 
-// UserUpdated handles updated user info
-func UserUpdated(s *discordgo.Session, m *discordgo.UserUpdate) {
+	// Save users acm roles
+	var hasAccess bool
+	var saveUserRoles []subscribing.Role
+	for _, role := range *acmRoles {
+		for _, r := range m.Roles {
+			if role.DiscordID == r {
+				saveUserRoles = append(saveUserRoles, subscribing.Role{
+					ID:        role.ID,
+					DiscordID: role.DiscordID,
+					Name:      role.Name,
+				})
+				hasAccess = true
+			}
+		}
+	}
+
+	// If user doesn't have access, attempt to delete user
+	if !hasAccess {
+		err = ss.DeleteMember(m.User.ID)
+		if err != nil {
+			// couldn't delete member (likely doesn't exist)
+			log.Println(err.GetMessage())
+			return
+		}
+		log.Println("member data successfully deleted")
+		return
+	}
+
+	// Check if user exists in members db, and if they do then update their info
+	updateErr := ss.UpdateMember(&subscribing.Member{
+		Nick: m.Nick,
+		User: &subscribing.User{
+			ID:            m.User.ID,
+			Username:      m.User.Username,
+			Discriminator: m.User.Discriminator,
+			Avatar: subscribing.Avatar{
+				ID:       m.User.Avatar,
+				ImageURL: "https:cdn.discordapp.com/avatars/" + m.User.ID + "/" + m.User.Avatar + ".png",
+			},
+		},
+		Roles: &saveUserRoles,
+	})
+	if updateErr == nil {
+		log.Println("Member was successfully updated")
+		return
+	} else {
+		log.Println(updateErr.GetMessage())
+	}
+
+	// If user has acm role but they don't exist in the db, save user.
+	saveErr := ss.SaveMember(&subscribing.Member{
+		GuildID:  m.GuildID,
+		JoinedAt: date_utils.GetNowUnix(),
+		Nick:     m.Nick,
+		User: &subscribing.User{
+			ID:            m.User.ID,
+			Username:      m.User.Username,
+			Discriminator: m.User.Discriminator,
+			Avatar: subscribing.Avatar{
+				ID:       m.User.Avatar,
+				ImageURL: "https:cdn.discordapp.com/avatars/" + m.User.ID + "/" + m.User.Avatar + ".png",
+			},
+		},
+		Roles: &saveUserRoles,
+	})
+	if saveErr != nil {
+		log.Println(saveErr.GetMessage())
+		return
+	}
+
 }

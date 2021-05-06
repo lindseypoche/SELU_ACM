@@ -5,10 +5,12 @@ import (
 	"log"
 	"time"
 
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/architecting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/blogging"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/commenting"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/listing"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/reacting"
+	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/subscribing"
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/errors/rest"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
@@ -20,6 +22,7 @@ const (
 	comment  = "comments"
 	channel  = "channels"
 	member   = "members"
+	role     = "roles"
 )
 
 var (
@@ -27,6 +30,7 @@ var (
 	commentCollection = GetClient().Database(database).Collection(comment)
 	channelCollection = GetClient().Database(database).Collection(channel)
 	memberCollection  = GetClient().Database(database).Collection(member)
+	roleCollection    = GetClient().Database(database).Collection(role)
 )
 
 // ListRepo
@@ -316,6 +320,152 @@ func (r *ListRepo) GetAllComments(msgID string) (*[]listing.Comment, rest.Err) {
 	return &comments, nil
 }
 
+func (r *ListRepo) GetAllOfficers() (*[]listing.Member, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := memberCollection.Find(ctx, bson.M{})
+	if err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error initializing cursor", err)
+	}
+	defer cursor.Close(ctx)
+
+	var members []listing.Member
+
+	for cursor.Next(ctx) {
+		var m listing.Member
+		if err = cursor.Decode(&m); err != nil {
+			// log error
+			return nil, rest.NewInternalServerError("error decoding a member", err)
+		}
+
+		members = append(members, m)
+	}
+
+	// check if there are any errors with cursor
+	if err = cursor.Err(); err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error due to cursor", err)
+	}
+
+	if len(members) < 1 {
+		// log error
+		return nil, rest.NewNotFoundError("cannot find data")
+	}
+
+	return &members, nil
+}
+
+func (r *ListRepo) GetActiveOfficers() (*[]listing.Member, rest.Err) {
+
+	return nil, nil
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
+
+	// filter := bson.M{"roles": authorUsername}
+
+	// cursor, err := messageCollection.Find(ctx, filter, options.Find().SetSort(map[string]int{"timestamp": 1}))
+	// if err != nil {
+	// 	return nil, rest.NewInternalServerError("error initializing cursor", err)
+	// }
+	// defer cursor.Close(ctx)
+
+	// messages := []listing.Message{}
+	// // loop through cursor and store in []messages
+	// for cursor.Next(ctx) {
+	// 	var message listing.Message
+
+	// 	if err = cursor.Decode(&message); err != nil {
+	// 		// log error
+	// 		return nil, rest.NewInternalServerError("error decoding data into message", err)
+	// 	}
+	// 	messages = append(messages, message)
+	// }
+
+	// // check if there are any errors with cursor
+	// if err := cursor.Err(); err != nil {
+	// 	// log error
+	// 	restErr := rest.NewInternalServerError("error due to cursor", err)
+	// 	return nil, restErr
+	// }
+
+	// if len(messages) < 1 {
+	// 	// log error
+	// 	return nil, rest.NewNotFoundError("no messages found")
+	// }
+	// return &messages, nil
+}
+
+func (r *ListRepo) GetUserRoles(id string) (*[]listing.Role, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user.id": id}
+
+	// get only the roles from the collection
+	// findOpts := options.FindOne().SetProjection(bson.M{"roles": 1})
+
+	member := listing.Member{}
+	result := memberCollection.FindOne(ctx, filter)
+
+	err := result.Decode(&member)
+	log.Println("GetUserRoles: member object\n", member)
+	if err != nil {
+		return nil, rest.NewInternalServerError("error getting user roles", err)
+	}
+
+	if len(*member.Roles) == 0 {
+		return nil, rest.NewNotFoundError("error user roles not found")
+	}
+
+	return member.Roles, nil
+}
+
+func (r *ListRepo) GetAllRoles() (*[]listing.Role, rest.Err) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := roleCollection.Find(ctx, bson.M{})
+	if err != nil {
+		// log error
+		return nil, rest.NewInternalServerError("error initializing cursor", err)
+	}
+	defer cursor.Close(ctx)
+
+	roles := []listing.Role{}
+
+	for cursor.Next(ctx) {
+		var role listing.Role
+		if err = cursor.Decode(&role); err != nil {
+			// log error
+			return nil, rest.NewInternalServerError("error decoding a role", err)
+		}
+		roles = append(roles, role)
+	}
+
+	result, err := roleCollection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, rest.NewInternalServerError("error getting user roles", err)
+	}
+
+	if err = result.Err(); err != nil {
+		return nil, rest.NewInternalServerError("error from cursor", err)
+	}
+
+	// check if there are any errors with cursor
+	// if err = cursor.Err(); err != nil {
+	// 	// log error
+	// 	return nil, rest.NewInternalServerError("error due to cursor", err)
+	// }
+
+	if len(roles) == 0 {
+		return nil, rest.NewNotFoundError("error user roles not found")
+	}
+
+	return &roles, nil
+}
+
 // BlogRepo
 type BlogRepo struct{}
 
@@ -326,7 +476,33 @@ func (r *BlogRepo) SaveMessage(message *blogging.Message) rest.Err {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err := messageCollection.InsertOne(ctx, *message)
+	// var cid, mid bson.ObjectId
+
+	// // retreive only the _id
+	// findOpts := options.FindOne().SetProjection(bson.M{"_id": 1})
+
+	// // get Channel Ref ID and Member Ref ID
+	// err := channelCollection.FindOne(ctx, bson.M{"id": message.ChannelID}, findOpts).Decode(&cid)
+	// if err != nil {
+	// 	if err == mongo.ErrNoDocuments {
+	// 		log.Println(rest.NewNotFoundError("channel not found")) // warning only
+	// 	}
+	// 	log.Println(rest.NewInternalServerError("error searching for channel", err)) // warning only
+	// }
+
+	// err = memberCollection.FindOne(ctx, bson.M{"user.id": message.Author.ID}, findOpts).Decode(&mid)
+	// if err != nil {
+	// 	if err == mongo.ErrNoDocuments {
+	// 		log.Println(rest.NewNotFoundError("message not member")) // warning only
+	// 	}
+	// 	log.Println(rest.NewInternalServerError("error searching for member", err)) // warning only
+	// }
+
+	// // store both references in new message
+	// message.ChannelRefID = cid
+	// message.MemberRefID = mid
+
+	_, err = messageCollection.InsertOne(ctx, *message)
 	if err != nil {
 		// log error
 		return rest.NewInternalServerError("error inserting message", err)
@@ -444,12 +620,6 @@ func (r *ReactRepo) SaveReaction(mr reacting.MessageReaction) rest.Err {
 	return nil
 }
 
-// GetReactions ( current status: ❌ )
-// GetReactions is not necessary yet as reactions are sent with a message.
-func (r *ReactRepo) GetReactions(string) (*reacting.MessageReactions, rest.Err) {
-	return nil, nil
-}
-
 // DeleteReaction ( current status: ✅ )
 func (r *ReactRepo) DeleteReaction(mr reacting.MessageReaction) rest.Err {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -475,6 +645,11 @@ func (r *ReactRepo) DeleteReaction(mr reacting.MessageReaction) rest.Err {
 	}
 
 	return nil
+}
+
+// GetReactions (postponed)
+func (r *ReactRepo) GetReactions(string) (*reacting.MessageReactions, rest.Err) {
+	return nil, rest.NewStatusNotImplemented("get reactions not implemented")
 }
 
 type CommentRepo struct{}
@@ -547,3 +722,148 @@ func (r *CommentRepo) DeleteComment(id string) rest.Err {
 // func (r *CommentRepo) DeleteAllComments(refID string) rest.Err {
 
 // }
+
+// Subscribing
+type SubscribeRepo struct{}
+
+func (r *SubscribeRepo) SaveMember(member *subscribing.Member) rest.Err {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := memberCollection.InsertOne(ctx, *member)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error saving member", err)
+	}
+	return nil
+}
+
+func (r *SubscribeRepo) UpdateMember(member *subscribing.Member) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user.id": member.User.ID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"nick":  member.Nick,
+			"user":  member.User,
+			"roles": member.Roles,
+		},
+	}
+
+	result, err := memberCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error updating member", err)
+	}
+
+	if result.ModifiedCount == 0 {
+		return rest.NewNotFoundError("error member not found")
+	}
+
+	return nil
+}
+
+// NOTICE: if you do not want a member to be deleted, like an officer,
+// then you should assign them an acm_alumi role before removing other
+// acm roles.
+func (r *SubscribeRepo) DeleteMember(id string) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user.id": id}
+	result, err := memberCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error deleting member", err)
+	}
+
+	if result.DeletedCount == 0 {
+		return rest.NewNotFoundError("error member id not found")
+	}
+
+	return nil
+}
+
+// ArchitectRepo
+type ArchitectRepo struct{}
+
+// DO NOT USE.
+func (r *ArchitectRepo) SaveRole(role *architecting.Role) rest.Err {
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
+
+	// _, err := roleCollection.InsertOne(ctx, *role)
+	// if err != nil {
+	// 	// log error
+	// 	return rest.NewInternalServerError("error inserting role", err)
+	// }
+	// return nil
+
+	return nil
+}
+
+func (r *ArchitectRepo) SaveChannel(channel *architecting.Channel) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := channelCollection.InsertOne(ctx, *channel)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error inserting channel", err)
+	}
+	return nil
+}
+
+func (r *ArchitectRepo) UpdateRole(role *architecting.Role) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": role.DiscordID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"id":   role.DiscordID,
+			"name": role.Name,
+		},
+	}
+
+	result, err := roleCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error updating role", err)
+	}
+
+	// if could not modify role, it doesn't exist. so attempt to save the role.
+	if result.MatchedCount == 0 {
+		_, err = roleCollection.InsertOne(ctx, *role)
+		if err != nil {
+			// log error
+			return rest.NewInternalServerError("error inserting role", err)
+		} else if err == nil {
+			// successfully saved role
+			return nil
+		}
+
+		return rest.NewNotFoundError("error role id not found to update")
+	}
+	return nil
+}
+
+func (r *ArchitectRepo) DeleteRole(id string) rest.Err {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": id}
+	result, err := roleCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		// log error
+		return rest.NewInternalServerError("error deleting role", err)
+	}
+	if result.DeletedCount == 0 {
+		return rest.NewNotFoundError("error role id not found to delete")
+	}
+	return nil
+}

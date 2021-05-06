@@ -6,6 +6,8 @@ import (
 	"github.com/cmd-ctrl-q/SELU_ACM/api/internal/utils/errors/rest"
 )
 
+var err rest.Err
+
 // Cache provides access to local cache
 type Cache interface {
 	// Get a message from cache with the Channel ID
@@ -28,6 +30,16 @@ type Repository interface {
 
 	// Comment repo methods
 	GetAllComments(string) (*[]Comment, rest.Err)
+
+	// Officers
+	GetAllOfficers() (*[]Member, rest.Err)
+	GetActiveOfficers() (*[]Member, rest.Err)
+	// GetOfficerByUsername()
+	// GetOfficerByID()
+
+	// Roles
+	GetUserRoles(string) (*[]Role, rest.Err)
+	GetAllRoles() (*[]Role, rest.Err)
 }
 
 // Service provides message listing operations.
@@ -51,6 +63,16 @@ type Service interface {
 
 	// Get comments by the MessageReference ID
 	GetComments(string) (*[]Comment, rest.Err)
+
+	// Get officers
+	GetAllOfficers() (*[]Member, rest.Err)
+	GetActiveOfficers() (*[]Member, rest.Err)
+	// GetOfficerByUsername()
+	// GetOfficerByID()
+
+	// Get roles
+	GetUserRoles(string) (*[]Role, rest.Err)
+	GetAllRoles() (*[]Role, rest.Err)
 }
 
 type service struct {
@@ -151,6 +173,42 @@ func (s *service) GetByStartTime() (*[]Message, rest.Err) {
 func (s *service) GetComments(refID string) (*[]Comment, rest.Err) {
 
 	result, err := s.r.GetAllComments(refID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *service) GetAllOfficers() (*[]Member, rest.Err) {
+	result, err := s.r.GetAllOfficers()
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *service) GetActiveOfficers() (*[]Member, rest.Err) {
+	result, err := s.r.GetActiveOfficers()
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *service) GetUserRoles(id string) (*[]Role, rest.Err) {
+	result, err := s.r.GetUserRoles(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *service) GetAllRoles() (*[]Role, rest.Err) {
+	result, err := s.r.GetAllRoles()
 	if err != nil {
 		return nil, err
 	}

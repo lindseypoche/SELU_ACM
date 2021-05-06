@@ -32,7 +32,7 @@ type config struct {
 	BotID    string            `json:"bot_id"`
 	Owners   []string          `json:"owners"`
 	Channels map[string]string `json:"channels"`
-	Roles    []string          `json:"roles"`
+	Roles    map[string]string `json:"roles"`
 	Guild    string            `json:"guild"`
 	Prefix   string            `json:"prefix"`
 }
@@ -56,6 +56,11 @@ func Init() {
 		fmt.Println("Env variable for 'BOT_TOKEN' cannot be empty")
 		return
 	}
+
+	// identify := discordgo.Identify{
+	// 	Token:   token,
+	// 	Intents: 8,
+	// }
 	Config.Token = token
 
 	fmt.Println("Initializing bot...")
@@ -67,16 +72,29 @@ func Init() {
 
 	Bot.setBot(bot)
 
+	bot.Identify.Intents = 32767
+
 	// Register handlers
+	// message handlers
 	bot.AddHandler(MessageCreated)
 	bot.AddHandler(MessageDeleted)
 	bot.AddHandler(MessageUpdated)
+
+	// reaction handlers
 	bot.AddHandler(MessageReactionAdded)
 	bot.AddHandler(MessageReactionRemoved)
-	bot.AddHandler(GuildMemberAdded)
+
+	// member handlers
 	bot.AddHandler(GuildMemberRemoved)
 	bot.AddHandler(GuildMemberUpdated)
-	bot.AddHandler(UserUpdated)
+
+	// role handlers
+	// bot.AddHandler(GuildRoleCreated)
+	bot.AddHandler(GuildRoleUpdated)
+	bot.AddHandler(GuildRoleDeleted)
+
+	// presence
+	// bot.AddHandler(PresenceUpdated)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = bot.Open()
