@@ -15,7 +15,7 @@ class Membership extends Component {
           <h1>Membership</h1>
           <br></br>
           <br></br>
-          <div className = "acm">
+          <div className = "icon">
             <img src = {acm}></img>
           </div>
           <br></br>
