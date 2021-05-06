@@ -1,5 +1,5 @@
 .homePage{
-    margin-top: 6rem;
+    margin-top: 0%;
     margin-bottom: 4rem;
     z-index: 98;
     height: fit-content;
@@ -43,8 +43,8 @@ img {
 
 .discord-thing > {
     display:block;
-    margin:5em 12% auto auto;
-    padding-top: 11%;
+    /* margin:5em 12% auto auto; */
+    /* padding-top: 11%; */
     
 }
 

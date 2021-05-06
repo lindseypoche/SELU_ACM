@@ -14,13 +14,14 @@ const VideoPlayback = () => {
                     //width: '100vw',
                     // left: '50%',
                     zIndex: '98',
-                    top: '200px',
+                    top: '0px',
                     height: '50em',
                     float: 'left',
                     objectFit: 'cover',
                     // transform: 'translate(-50%, -50%)',
                     zIndex: '-1',
                     filter:"grayscale(30%)",
+                    margintop:"-20px",
                 }}
                 >
                     <source src= {finalcut} type='video/mp4'/>
