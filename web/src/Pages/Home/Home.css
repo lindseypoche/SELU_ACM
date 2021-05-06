@@ -42,3 +42,10 @@ img {
     
 }
 
+.deta{
+    border-radius: .75em;
+    padding-right: 15%;
+    padding-left: 15%;
+    padding-top: 2em;
+    font-family: Arial, Helvetica, Arial, sans-serif;
+}
