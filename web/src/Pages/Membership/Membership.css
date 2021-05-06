@@ -15,17 +15,25 @@
     padding-bottom: 15px;
     margin-top: 4rem;
     margin-bottom: 4rem;
-    
 }
 
 .square{
     height: auto;
-    width:25%;
+    width:15%;
     margin-left: auto;
     margin-right: auto;
 }
-.download{
+
+.forms{
+    height: 30px;
+    width: 30px;
+    margin-left: auto;
+    margin-right: auto;
     
-    width:25px;
-    height:auto;
+}
+.icon{
+    height: 15%;
+    width: 15%;
+    margin-left: auto;
+    margin-right: auto;
 }
